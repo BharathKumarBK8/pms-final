@@ -4,7 +4,7 @@ import { FiBell, FiUser } from "react-icons/fi";
 
 export default function Header() {
   return (
-    <header className="w-full h-16 bg-white border-b shadow-sm flex items-center justify-between px-6">
+    <header className="w-full h-16 bg-blue-50 shadow-md border-b border-blue-100 flex items-center justify-between px-6">
       <h1 className="font-semibold text-lg">Patient Management System</h1>
 
       <div className="flex items-center gap-6">

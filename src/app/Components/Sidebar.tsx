@@ -9,10 +9,18 @@ import {
   FiSettings,
   FiMenu,
 } from "react-icons/fi";
+import { LiaToothSolid } from "react-icons/lia";
+import { RiBillLine } from "react-icons/ri";
 
 const menuItems = [
-  { name: "Dashboard", icon: <FiHome size={20} />, href: "/dashboard" },
+  { name: "Dashboard", icon: <FiHome size={20} />, href: "/" },
   { name: "Patients", icon: <FiUsers size={20} />, href: "/patients" },
+  {
+    name: "Treatments",
+    icon: <LiaToothSolid size={20} />,
+    href: "/treatments",
+  },
+  { name: "Invoices", icon: <RiBillLine size={20} />, href: "/invoices" },
   {
     name: "Appointments",
     icon: <FiCalendar size={20} />,
@@ -26,11 +34,16 @@ export default function Sidebar() {
 
   return (
     <aside
-      className={`h-screen bg-white border-r shadow-sm transition-all duration-300 
-                 ${open ? "w-64" : "w-20"} flex flex-col`}
+      className={`h-screen bg-gradient-to-b from-white to-blue-50 shadow-[4px_0_12px_rgba(0,0,0,0.1)]
+                  transition-all duration-300 ${
+                    open ? "w-64" : "w-20"
+                  } flex flex-col`}
     >
       {/* Toggle Button */}
-      <button className="p-4 flex items-center" onClick={() => setOpen(!open)}>
+      <button
+        className="p-4 flex items-center text-blue-600 hover:text-blue-700 transition"
+        onClick={() => setOpen(!open)}
+      >
         <FiMenu size={22} />
       </button>
 
@@ -40,9 +53,11 @@ export default function Sidebar() {
           <Link
             key={item.name}
             href={item.href}
-            className="flex items-center gap-4 px-4 py-3 rounded-md hover:bg-gray-100"
+            className="flex items-center gap-4 px-4 py-3 rounded-md 
+                       hover:bg-blue-100 transition-colors"
           >
             <span className="text-blue-600">{item.icon}</span>
+
             {open && (
               <span className="text-gray-700 font-medium">{item.name}</span>
             )}
