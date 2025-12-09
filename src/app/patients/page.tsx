@@ -2,8 +2,10 @@
 import Table from "../Components/Table";
 import Layout from "../Components/Layout";
 import { Button } from "primereact/button";
+import { useRouter } from "next/navigation";
 
 export default function PatientsPage() {
+  const router = useRouter();
   const columns = [
     { field: "id", header: "Patient ID", sortable: true },
     { field: "name", header: "Name", sortable: true },
@@ -14,7 +16,7 @@ export default function PatientsPage() {
   ];
 
   const handleAddPatient = () => {
-    alert("Add Patient clicked!");
+    router.push("/patients/add");
   };
 
   return (
