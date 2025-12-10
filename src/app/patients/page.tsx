@@ -15,8 +15,12 @@ export default function PatientsPage() {
     { field: "status", header: "Status", sortable: true },
   ];
 
-  const handleAddPatient = () => {
-    router.push("/patients/add");
+  const handleEdit = (rowData: any) => {
+    router.push(`/patients/edit/${rowData.id}`);
+  };
+
+  const handleView = (rowData: any) => {
+    router.push(`/patients/view/${rowData.id}`);
   };
 
   return (
@@ -29,11 +33,16 @@ export default function PatientsPage() {
           label="Add Patient"
           icon="pi pi-plus"
           className="p-button-rounded p-button-success"
-          onClick={handleAddPatient}
+          onClick={() => router.push("/patients/add")}
         />
       </div>
 
-      <Table endpoint="http://localhost:5000/api/patients" columns={columns} />
+      <Table
+        endpoint="http://localhost:5000/api/patients"
+        columns={columns}
+        onEdit={handleEdit}
+        onView={handleView}
+      />
     </Layout>
   );
 }

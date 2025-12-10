@@ -17,9 +17,19 @@ type TableProps = {
     header: string;
     sortable?: boolean;
   }[];
+  onEdit?: (rowData: any) => void;
+  onView?: (rowData: any) => void;
+  onDelete?: (rowData: any) => void;
 };
 
-export default function Table({ title, endpoint, columns }: TableProps) {
+export default function Table({
+  title,
+  endpoint,
+  columns,
+  onEdit,
+  onView,
+  onDelete,
+}: TableProps) {
   const [data, setData] = useState<any[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [globalFilter, setGlobalFilter] = useState<string>("");
@@ -48,6 +58,11 @@ export default function Table({ title, endpoint, columns }: TableProps) {
   }, [endpoint]);
 
   const handleDelete = async (rowData: any) => {
+    if (onDelete) {
+      onDelete(rowData);
+      return;
+    }
+
     confirmDialog({
       message: `Are you sure you want to delete this record?`,
       header: "Confirm Delete",
@@ -79,38 +94,23 @@ export default function Table({ title, endpoint, columns }: TableProps) {
     });
   };
 
-  const handleEdit = (rowData: any) => {
-    // Navigate to edit page or open modal
-    console.log("Edit:", rowData);
-    toast.current?.show({
-      severity: "info",
-      summary: "Edit",
-      detail: `Edit functionality for ID: ${rowData.id}`,
-    });
-  };
-
-  const handleView = (rowData: any) => {
-    console.log("View:", rowData);
-    toast.current?.show({
-      severity: "info",
-      summary: "View",
-      detail: `View functionality for ID: ${rowData.id}`,
-    });
-  };
-
   const actionBodyTemplate = (rowData: any) => {
     return (
       <div className="flex space-x-2">
-        <Button
-          icon="pi pi-pencil"
-          className="p-button-rounded p-button-success p-button-sm"
-          onClick={() => handleEdit(rowData)}
-        />
-        <Button
-          icon="pi pi-eye"
-          className="p-button-rounded p-button-info p-button-sm"
-          onClick={() => handleView(rowData)}
-        />
+        {onEdit && (
+          <Button
+            icon="pi pi-pencil"
+            className="p-button-rounded p-button-success p-button-sm"
+            onClick={() => onEdit(rowData)}
+          />
+        )}
+        {onView && (
+          <Button
+            icon="pi pi-eye"
+            className="p-button-rounded p-button-info p-button-sm"
+            onClick={() => onView(rowData)}
+          />
+        )}
         <Button
           icon="pi pi-trash"
           className="p-button-rounded p-button-danger p-button-sm"
