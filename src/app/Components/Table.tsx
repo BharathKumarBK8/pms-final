@@ -4,14 +4,13 @@ import { DataTable } from "primereact/datatable";
 import { Column } from "primereact/column";
 import { InputText } from "primereact/inputtext";
 import { Button } from "primereact/button";
-import { confirmDialog } from "primereact/confirmdialog";
 import { Toast } from "primereact/toast";
 import { useRef } from "react";
 import "./Table.css";
 
 type TableProps = {
   title?: string;
-  endpoint: string;
+  getUrl: string;
   columns: {
     field: string;
     header: string;
@@ -24,7 +23,7 @@ type TableProps = {
 
 export default function Table({
   title,
-  endpoint,
+  getUrl,
   columns,
   onEdit,
   onView,
@@ -38,7 +37,7 @@ export default function Table({
   const fetchData = async () => {
     setLoading(true);
     try {
-      const res = await fetch(endpoint);
+      const res = await fetch(getUrl);
       const json = await res.json();
       setData(json);
     } catch (err) {
@@ -55,44 +54,7 @@ export default function Table({
 
   useEffect(() => {
     fetchData();
-  }, [endpoint]);
-
-  const handleDelete = async (rowData: any) => {
-    if (onDelete) {
-      onDelete(rowData);
-      return;
-    }
-
-    confirmDialog({
-      message: `Are you sure you want to delete this record?`,
-      header: "Confirm Delete",
-      icon: "pi pi-exclamation-triangle",
-      accept: async () => {
-        try {
-          const res = await fetch(`${endpoint}/${rowData.id}`, {
-            method: "DELETE",
-          });
-
-          if (res.ok) {
-            toast.current?.show({
-              severity: "success",
-              summary: "Success",
-              detail: "Record deleted successfully",
-            });
-            fetchData();
-          } else {
-            throw new Error("Delete failed");
-          }
-        } catch (err) {
-          toast.current?.show({
-            severity: "error",
-            summary: "Error",
-            detail: "Failed to delete record",
-          });
-        }
-      },
-    });
-  };
+  }, [getUrl]);
 
   const actionBodyTemplate = (rowData: any) => {
     return (
@@ -111,11 +73,13 @@ export default function Table({
             onClick={() => onView(rowData)}
           />
         )}
-        <Button
-          icon="pi pi-trash"
-          className="p-button-rounded p-button-danger p-button-sm"
-          onClick={() => handleDelete(rowData)}
-        />
+        {onDelete && (
+          <Button
+            icon="pi pi-trash"
+            className="p-button-rounded p-button-danger p-button-sm"
+            onClick={() => onDelete(rowData)}
+          />
+        )}
       </div>
     );
   };

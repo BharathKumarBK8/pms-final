@@ -31,10 +31,7 @@ export default function TreatmentsPage() {
           onClick={handleAddTreatment}
         />
       </div>
-      <Table
-        endpoint="http://localhost:5000/api/treatments"
-        columns={columns}
-      />
+      <Table getUrl="http://localhost:5000/api/treatments" columns={columns} />
     </Layout>
   );
 }

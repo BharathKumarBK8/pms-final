@@ -170,7 +170,7 @@ export default function PatientForm({ patientId }: PatientFormProps) {
           </div>
           <Table
             title={`Patient ID: ${patientId}`}
-            endpoint={`http://localhost:5000/api/patients/${patientId}/treatments`}
+            getUrl={`http://localhost:5000/api/patients/${patientId}/treatments`}
             columns={treatmentColumns}
             onEdit={handleEditTreatment}
             onView={handleViewTreatment}

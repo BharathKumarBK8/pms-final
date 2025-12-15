@@ -38,7 +38,7 @@ export default function PatientsPage() {
       </div>
 
       <Table
-        endpoint="http://localhost:5000/api/patients"
+        getUrl="http://localhost:5000/api/patients"
         columns={columns}
         onEdit={handleEdit}
         onView={handleView}

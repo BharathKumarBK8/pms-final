@@ -168,7 +168,7 @@ export default function TreatmentForm({
           <div className="bg-white p-6 rounded-lg shadow">
             <h3 className="text-lg font-semibold mb-4">Billing Summary</h3>
             <Table
-              endpoint={`http://localhost:5000/api/billing?treatmentId=${treatmentId}`}
+              getUrl={`http://localhost:5000/api/billing?treatmentId=${treatmentId}`}
               columns={billingColumns}
               onEdit={handleEditBilling}
             />
@@ -177,7 +177,7 @@ export default function TreatmentForm({
           <div className="bg-white p-6 rounded-lg shadow">
             <h3 className="text-lg font-semibold mb-4">Invoices & Payments</h3>
             <Table
-              endpoint={`http://localhost:5000/api/invoices?treatmentId=${treatmentId}`}
+              getUrl={`http://localhost:5000/api/invoices?treatmentId=${treatmentId}`}
               columns={invoiceColumns}
               onEdit={handleViewInvoice}
             />
