@@ -1,23 +1,29 @@
 "use client";
 import { useState, useEffect } from "react";
+import { useRouter } from "next/navigation";
 import Layout from "@/app/Components/Layout";
-import TreatmentForm from "@/app/Components/TreatmentForm";
-import { Dropdown } from "primereact/dropdown";
+import { AutoComplete } from "primereact/autocomplete";
 import { Button } from "primereact/button";
 import { Card } from "primereact/card";
 
+interface PatientOption {
+  label: string;
+  value: number;
+}
+
 export default function AddTreatmentPage() {
-  const [step, setStep] = useState(1);
-  const [selectedPatientId, setSelectedPatientId] = useState<number | null>(
+  const [selectedPatient, setSelectedPatient] = useState<PatientOption | null>(
     null
   );
-  const [patients, setPatients] = useState([]);
+  const [patients, setPatients] = useState<PatientOption[]>([]);
+  const [filteredPatients, setFilteredPatients] = useState<PatientOption[]>([]);
+  const router = useRouter();
 
   useEffect(() => {
     fetch("http://localhost:5000/api/patients")
       .then((res) => res.json())
       .then((data) => {
-        const patientOptions = data.map((patient: any) => ({
+        const patientOptions: PatientOption[] = data.map((patient: any) => ({
           label: `${patient.name} (ID: ${patient.id})`,
           value: patient.id,
         }));
@@ -26,14 +32,22 @@ export default function AddTreatmentPage() {
       .catch((err) => console.error("Error fetching patients:", err));
   }, []);
 
-  const handleNext = () => {
-    if (selectedPatientId) {
-      setStep(2);
-    }
+  const searchPatients = (event: { query: string }) => {
+    const query = event.query.toLowerCase();
+
+    setFilteredPatients(
+      patients.filter(
+        (p) =>
+          p.label.toLowerCase().includes(query) ||
+          p.value.toString().includes(query)
+      )
+    );
   };
 
-  const handleBack = () => {
-    setStep(1);
+  const handleNext = () => {
+    if (selectedPatient) {
+      router.push(`/patients/${selectedPatient.value}/treatments/add`);
+    }
   };
 
   return (
@@ -42,49 +56,34 @@ export default function AddTreatmentPage() {
         Add Treatment
       </h1>
 
-      {step === 1 && (
-        <Card className="p-6">
-          <h2 className="text-lg font-semibold mb-4">Step 1: Select Patient</h2>
-          <div className="grid gap-4">
-            <div>
-              <label className="block mb-2">Patient</label>
-              <Dropdown
-                value={selectedPatientId}
-                options={patients}
-                onChange={(e) => setSelectedPatientId(e.value)}
-                placeholder="Select a patient"
-                filter
-                className="w-full"
-              />
-            </div>
-            <div className="flex gap-2 mt-4">
-              <Button
-                label="Next"
-                icon="pi pi-arrow-right"
-                onClick={handleNext}
-                disabled={!selectedPatientId}
-              />
-            </div>
-          </div>
-        </Card>
-      )}
+      <Card className="p-6">
+        <h2 className="text-lg font-semibold mb-4">Select Patient</h2>
 
-      {step === 2 && (
-        <div className="space-y-4">
-          <div className="flex items-center gap-2">
-            <Button
-              icon="pi pi-arrow-left"
-              label="Back"
-              severity="secondary"
-              onClick={handleBack}
+        <div className="grid gap-4">
+          <div>
+            <label className="block mb-2">Patient</label>
+            <AutoComplete
+              value={selectedPatient}
+              suggestions={filteredPatients}
+              completeMethod={searchPatients}
+              field="label"
+              placeholder="Type patient name or ID"
+              onChange={(e) => setSelectedPatient(e.value)}
+              dropdown
+              className="w-full"
             />
-            <span className="text-sm text-gray-600">
-              Step 2: Treatment Details
-            </span>
           </div>
-          <TreatmentForm patientId={selectedPatientId!.toString()} />
+
+          <div className="flex gap-2 mt-4">
+            <Button
+              label="Next"
+              icon="pi pi-arrow-right"
+              onClick={handleNext}
+              disabled={!selectedPatient}
+            />
+          </div>
         </div>
-      )}
+      </Card>
     </Layout>
   );
 }
