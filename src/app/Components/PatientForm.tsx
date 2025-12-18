@@ -3,7 +3,7 @@ import { useState, useEffect } from "react";
 import { InputText } from "primereact/inputtext";
 import { Dropdown } from "primereact/dropdown";
 import { Button } from "primereact/button";
-import { useRouter } from "next/navigation";
+import { useAppRouter } from "../context/RouterContext";
 import Table from "./Table";
 
 interface PatientFormProps {
@@ -11,7 +11,12 @@ interface PatientFormProps {
 }
 
 export default function PatientForm({ patientId }: PatientFormProps) {
-  const router = useRouter();
+  const {
+    navigateToPatientsList,
+    navigateToAddTreatment,
+    navigateToTreatmentEdit,
+    navigateToTreatmentView,
+  } = useAppRouter();
 
   const [formData, setFormData] = useState({
     name: "",
@@ -82,7 +87,7 @@ export default function PatientForm({ patientId }: PatientFormProps) {
       });
 
       if (response.ok) {
-        router.push("/patients");
+        navigateToPatientsList();
       }
     } catch (error) {
       console.error(
@@ -93,15 +98,18 @@ export default function PatientForm({ patientId }: PatientFormProps) {
   };
 
   const handleEditTreatment = (rowData: any) => {
-    router.push(`/patients/${patientId}/treatments/edit/${rowData.id}`);
+    if (!patientId) return;
+    navigateToTreatmentEdit(patientId, rowData.id);
   };
 
   const handleViewTreatment = (rowData: any) => {
-    router.push(`/patients/${patientId}/treatments/view/${rowData.id}`);
+    if (!patientId) return;
+    navigateToTreatmentView(patientId, rowData.id);
   };
 
   const handleAddTreatment = () => {
-    router.push(`/patients/${patientId}/treatments/add`);
+    if (!patientId) return;
+    navigateToAddTreatment(patientId);
   };
 
   return (
@@ -178,7 +186,7 @@ export default function PatientForm({ patientId }: PatientFormProps) {
               label="Cancel"
               icon="pi pi-times"
               severity="secondary"
-              onClick={() => router.push("/patients")}
+              onClick={() => navigateToPatientsList()}
             />
           </div>
         </div>

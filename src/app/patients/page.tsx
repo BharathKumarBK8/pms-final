@@ -3,10 +3,11 @@ import { useEffect, useState } from "react";
 import Table from "../Components/Table";
 import Layout from "../Components/Layout";
 import { Button } from "primereact/button";
-import { useRouter } from "next/navigation";
+import { useAppRouter } from "../context/RouterContext";
 
 export default function PatientsPage() {
-  const router = useRouter();
+  const { navigateToPatientEdit, navigateToPatientView, navigateToPatientAdd } =
+    useAppRouter();
   const [patients, setPatients] = useState<any[]>([]);
 
   const columns = [
@@ -19,11 +20,11 @@ export default function PatientsPage() {
   ];
 
   const handleEdit = (rowData: any) => {
-    router.push(`/patients/edit/${rowData.id}`);
+    navigateToPatientEdit(rowData.id);
   };
 
   const handleView = (rowData: any) => {
-    router.push(`/patients/view/${rowData.id}`);
+    navigateToPatientView(rowData.id);
   };
 
   useEffect(() => {
@@ -50,7 +51,7 @@ export default function PatientsPage() {
           label="Add Patient"
           icon="pi pi-plus"
           className="p-button-rounded p-button-success"
-          onClick={() => router.push("/patients/add")}
+          onClick={() => navigateToPatientAdd()}
         />
       </div>
 

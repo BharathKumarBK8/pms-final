@@ -3,10 +3,10 @@ import { useEffect, useState } from "react";
 import Table from "../Components/Table";
 import Layout from "../Components/Layout";
 import { Button } from "primereact/button";
-import { useRouter } from "next/navigation";
+import { useAppRouter } from "../context/RouterContext";
 
 export default function TreatmentsPage() {
-  const router = useRouter();
+  const { navigateToTreatmentAdd } = useAppRouter();
   const [treatments, setTreatments] = useState<any[]>([]);
   const columns = [
     { field: "id", header: "Treatment ID", sortable: true },
@@ -19,7 +19,7 @@ export default function TreatmentsPage() {
   ];
 
   const handleAddTreatment = () => {
-    router.push("/treatments/add");
+    navigateToTreatmentAdd();
   };
 
   useEffect(() => {

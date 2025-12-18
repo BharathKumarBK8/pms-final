@@ -4,7 +4,7 @@ import { InputText } from "primereact/inputtext";
 import { Dropdown } from "primereact/dropdown";
 import { Calendar } from "primereact/calendar";
 import { Button } from "primereact/button";
-import { useRouter } from "next/navigation";
+import { useAppRouter } from "../context/RouterContext";
 
 interface TreatmentFormProps {
   patientId: string;
@@ -15,7 +15,7 @@ export default function TreatmentForm({
   patientId,
   treatmentId,
 }: TreatmentFormProps) {
-  const router = useRouter();
+  const { navigateToPatientEdit } = useAppRouter();
   const [formData, setFormData] = useState({
     patientId: patientId,
     date: new Date() as Date | null,
@@ -55,7 +55,7 @@ export default function TreatmentForm({
         body: JSON.stringify(formData),
       });
       if (response.ok) {
-        router.push(`/patients/edit/${patientId}`);
+        navigateToPatientEdit(patientId);
       }
     } catch (error) {
       console.error(
@@ -133,7 +133,7 @@ export default function TreatmentForm({
               label="Cancel"
               icon="pi pi-times"
               severity="secondary"
-              onClick={() => router.push(`/patients/edit/${patientId}`)}
+              onClick={() => navigateToPatientEdit(patientId)}
             />
           </div>
         </div>
