@@ -1,4 +1,5 @@
 "use client";
+import { useEffect, useState } from "react";
 import Table from "../Components/Table";
 import Layout from "../Components/Layout";
 import { Button } from "primereact/button";
@@ -6,6 +7,8 @@ import { useRouter } from "next/navigation";
 
 export default function PatientsPage() {
   const router = useRouter();
+  const [patients, setPatients] = useState<any[]>([]);
+
   const columns = [
     { field: "id", header: "Patient ID", sortable: true },
     { field: "name", header: "Name", sortable: true },
@@ -23,6 +26,20 @@ export default function PatientsPage() {
     router.push(`/patients/view/${rowData.id}`);
   };
 
+  useEffect(() => {
+    const fetchPatients = async () => {
+      try {
+        const res = await fetch("http://localhost:5000/api/patients");
+        const json = await res.json();
+        setPatients(json);
+      } catch (error) {
+        console.error("Failed to fetch patients", error);
+      }
+    };
+
+    fetchPatients();
+  }, []);
+
   return (
     <Layout>
       <div className="flex justify-between items-center mb-4">
@@ -38,7 +55,8 @@ export default function PatientsPage() {
       </div>
 
       <Table
-        getUrl="http://localhost:5000/api/patients"
+        title="Patients"
+        data={patients}
         columns={columns}
         onEdit={handleEdit}
         onView={handleView}

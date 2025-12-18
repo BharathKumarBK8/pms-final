@@ -1,4 +1,5 @@
 "use client";
+import { useEffect, useState } from "react";
 import Table from "../Components/Table";
 import Layout from "../Components/Layout";
 import { Button } from "primereact/button";
@@ -6,6 +7,7 @@ import { useRouter } from "next/navigation";
 
 export default function TreatmentsPage() {
   const router = useRouter();
+  const [treatments, setTreatments] = useState<any[]>([]);
   const columns = [
     { field: "id", header: "Treatment ID", sortable: true },
     { field: "patientId", header: "Patient ID", sortable: true },
@@ -20,6 +22,20 @@ export default function TreatmentsPage() {
     router.push("/treatments/add");
   };
 
+  useEffect(() => {
+    const fetchTreatments = async () => {
+      try {
+        const res = await fetch("http://localhost:5000/api/treatments");
+        const json = await res.json();
+        setTreatments(json);
+      } catch (error) {
+        console.error("Failed to fetch treatments", error);
+      }
+    };
+
+    fetchTreatments();
+  }, []);
+
   return (
     <Layout>
       <div className="flex justify-between items-center mb-4">
@@ -31,7 +47,7 @@ export default function TreatmentsPage() {
           onClick={handleAddTreatment}
         />
       </div>
-      <Table getUrl="http://localhost:5000/api/treatments" columns={columns} />
+      <Table data={treatments} columns={columns} />
     </Layout>
   );
 }

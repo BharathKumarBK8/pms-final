@@ -5,7 +5,6 @@ import { Dropdown } from "primereact/dropdown";
 import { Calendar } from "primereact/calendar";
 import { Button } from "primereact/button";
 import { useRouter } from "next/navigation";
-import Table from "./Table";
 
 interface TreatmentFormProps {
   patientId: string;
@@ -31,21 +30,6 @@ export default function TreatmentForm({
     { label: "In Progress", value: "In Progress" },
     { label: "Completed", value: "Completed" },
     { label: "Cancelled", value: "Cancelled" },
-  ];
-
-  const billingColumns = [
-    { field: "id", header: "Billing ID", sortable: true },
-    { field: "serviceDescription", header: "Service", sortable: true },
-    { field: "amount", header: "Amount", sortable: true },
-    { field: "date", header: "Date", sortable: true },
-  ];
-
-  const invoiceColumns = [
-    { field: "id", header: "Invoice ID", sortable: true },
-    { field: "amount", header: "Amount", sortable: true },
-    { field: "date", header: "Date", sortable: true },
-    { field: "paymentMethod", header: "Payment Method" },
-    { field: "status", header: "Payment Status", sortable: true },
   ];
 
   useEffect(() => {
@@ -79,14 +63,6 @@ export default function TreatmentForm({
         error
       );
     }
-  };
-
-  const handleEditBilling = (rowData: any) => {
-    router.push(`/billing/edit/${rowData.id}`);
-  };
-
-  const handleViewInvoice = (rowData: any) => {
-    router.push(`/invoices/view/${rowData.id}`);
   };
 
   return (
@@ -162,28 +138,6 @@ export default function TreatmentForm({
           </div>
         </div>
       </form>
-
-      {treatmentId && (
-        <>
-          <div className="bg-white p-6 rounded-lg shadow">
-            <h3 className="text-lg font-semibold mb-4">Billing Summary</h3>
-            <Table
-              getUrl={`http://localhost:5000/api/billing?treatmentId=${treatmentId}`}
-              columns={billingColumns}
-              onEdit={handleEditBilling}
-            />
-          </div>
-
-          <div className="bg-white p-6 rounded-lg shadow">
-            <h3 className="text-lg font-semibold mb-4">Invoices & Payments</h3>
-            <Table
-              getUrl={`http://localhost:5000/api/invoices?treatmentId=${treatmentId}`}
-              columns={invoiceColumns}
-              onEdit={handleViewInvoice}
-            />
-          </div>
-        </>
-      )}
     </div>
   );
 }

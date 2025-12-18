@@ -1,16 +1,14 @@
 "use client";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { DataTable } from "primereact/datatable";
 import { Column } from "primereact/column";
 import { InputText } from "primereact/inputtext";
 import { Button } from "primereact/button";
-import { Toast } from "primereact/toast";
-import { useRef } from "react";
 import "./Table.css";
 
 type TableProps = {
   title?: string;
-  getUrl: string;
+  data: any[];
   columns: {
     field: string;
     header: string;
@@ -23,73 +21,45 @@ type TableProps = {
 
 export default function Table({
   title,
-  getUrl,
+  data,
   columns,
   onEdit,
   onView,
   onDelete,
 }: TableProps) {
-  const [data, setData] = useState<any[]>([]);
-  const [loading, setLoading] = useState<boolean>(true);
   const [globalFilter, setGlobalFilter] = useState<string>("");
-  const toast = useRef<Toast>(null);
 
-  const fetchData = async () => {
-    setLoading(true);
-    try {
-      const res = await fetch(getUrl);
-      const json = await res.json();
-      setData(json);
-    } catch (err) {
-      console.error("Error fetching data:", err);
-      toast.current?.show({
-        severity: "error",
-        summary: "Error",
-        detail: "Failed to fetch data",
-      });
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  useEffect(() => {
-    fetchData();
-  }, [getUrl]);
-
-  const actionBodyTemplate = (rowData: any) => {
-    return (
-      <div className="flex space-x-2">
-        {onEdit && (
-          <Button
-            icon="pi pi-pencil"
-            className="p-button-rounded p-button-success p-button-sm"
-            onClick={() => onEdit(rowData)}
-          />
-        )}
-        {onView && (
-          <Button
-            icon="pi pi-eye"
-            className="p-button-rounded p-button-info p-button-sm"
-            onClick={() => onView(rowData)}
-          />
-        )}
-        {onDelete && (
-          <Button
-            icon="pi pi-trash"
-            className="p-button-rounded p-button-danger p-button-sm"
-            onClick={() => onDelete(rowData)}
-          />
-        )}
-      </div>
-    );
-  };
+  const actionBodyTemplate = (rowData: any) => (
+    <div className="flex space-x-2">
+      {onEdit && (
+        <Button
+          icon="pi pi-pencil"
+          className="p-button-rounded p-button-success p-button-sm"
+          onClick={() => onEdit(rowData)}
+        />
+      )}
+      {onView && (
+        <Button
+          icon="pi pi-eye"
+          className="p-button-rounded p-button-info p-button-sm"
+          onClick={() => onView(rowData)}
+        />
+      )}
+      {onDelete && (
+        <Button
+          icon="pi pi-trash"
+          className="p-button-rounded p-button-danger p-button-sm"
+          onClick={() => onDelete(rowData)}
+        />
+      )}
+    </div>
+  );
 
   return (
     <>
-      <Toast ref={toast} />
       <div className="card bg-transparent">
         <div className="flex justify-between items-center mb-4">
-          <h2 className="text-xl font-semibold text-black-200">{title}</h2>
+          <h2 className="text-xl font-semibold">{title}</h2>
 
           <span className="p-input-icon-left">
             <i className="pi pi-search" />
@@ -106,7 +76,6 @@ export default function Table({
           value={data}
           paginator
           rows={10}
-          loading={loading}
           globalFilter={globalFilter}
           emptyMessage="No records found."
           className="p-datatable-sm"
@@ -119,7 +88,10 @@ export default function Table({
               sortable={col.sortable}
             />
           ))}
-          <Column body={actionBodyTemplate} header="Actions" />
+
+          {(onEdit || onView || onDelete) && (
+            <Column header="Actions" body={actionBodyTemplate} />
+          )}
         </DataTable>
       </div>
     </>

@@ -12,6 +12,7 @@ interface PatientFormProps {
 
 export default function PatientForm({ patientId }: PatientFormProps) {
   const router = useRouter();
+
   const [formData, setFormData] = useState({
     name: "",
     age: "",
@@ -19,6 +20,8 @@ export default function PatientForm({ patientId }: PatientFormProps) {
     phone: "",
     status: "Active",
   });
+
+  const [treatments, setTreatments] = useState<any[]>([]);
 
   const genderOptions = [
     { label: "Male", value: "Male" },
@@ -40,20 +43,36 @@ export default function PatientForm({ patientId }: PatientFormProps) {
   ];
 
   useEffect(() => {
-    if (patientId) {
-      fetch(`http://localhost:5000/api/patients/${patientId}`)
-        .then((res) => res.json())
-        .then((data) => setFormData(data))
-        .catch((err) => console.error("Error fetching patient:", err));
-    }
+    if (!patientId) return;
+
+    const fetchPatientAndTreatments = async () => {
+      try {
+        const [patientRes, treatmentsRes] = await Promise.all([
+          fetch(`http://localhost:5000/api/patients/${patientId}`),
+          fetch(`http://localhost:5000/api/patients/${patientId}/treatments`),
+        ]);
+
+        const patientData = await patientRes.json();
+        const treatmentsData = await treatmentsRes.json();
+
+        setFormData(patientData);
+        setTreatments(treatmentsData);
+      } catch (error) {
+        console.error("Error fetching patient data:", error);
+      }
+    };
+
+    fetchPatientAndTreatments();
   }, [patientId]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+
     try {
       const url = patientId
         ? `http://localhost:5000/api/patients/${patientId}`
         : "http://localhost:5000/api/patients";
+
       const method = patientId ? "PUT" : "POST";
 
       const response = await fetch(url, {
@@ -61,6 +80,7 @@ export default function PatientForm({ patientId }: PatientFormProps) {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(formData),
       });
+
       if (response.ok) {
         router.push("/patients");
       }
@@ -86,6 +106,7 @@ export default function PatientForm({ patientId }: PatientFormProps) {
 
   return (
     <div className="space-y-6">
+      {/* Patient Form */}
       <form onSubmit={handleSubmit} className="bg-white p-6 rounded-lg shadow">
         <div className="grid gap-4">
           <div>
@@ -99,6 +120,7 @@ export default function PatientForm({ patientId }: PatientFormProps) {
               className="w-full"
             />
           </div>
+
           <div>
             <label className="block mb-2">Age</label>
             <InputText
@@ -111,6 +133,7 @@ export default function PatientForm({ patientId }: PatientFormProps) {
               className="w-full"
             />
           </div>
+
           <div>
             <label className="block mb-2">Gender</label>
             <Dropdown
@@ -121,6 +144,7 @@ export default function PatientForm({ patientId }: PatientFormProps) {
               className="w-full"
             />
           </div>
+
           <div>
             <label className="block mb-2">Phone</label>
             <InputText
@@ -132,6 +156,7 @@ export default function PatientForm({ patientId }: PatientFormProps) {
               className="w-full"
             />
           </div>
+
           <div>
             <label className="block mb-2">Status</label>
             <Dropdown
@@ -141,6 +166,7 @@ export default function PatientForm({ patientId }: PatientFormProps) {
               className="w-full"
             />
           </div>
+
           <div className="flex gap-2 mt-4">
             <Button
               type="submit"
@@ -158,6 +184,7 @@ export default function PatientForm({ patientId }: PatientFormProps) {
         </div>
       </form>
 
+      {/* Treatments Table */}
       {patientId && (
         <div className="bg-white p-6 rounded-lg shadow">
           <div className="flex justify-between items-center mb-4">
@@ -168,9 +195,10 @@ export default function PatientForm({ patientId }: PatientFormProps) {
               onClick={handleAddTreatment}
             />
           </div>
+
           <Table
             title={`Patient ID: ${patientId}`}
-            getUrl={`http://localhost:5000/api/patients/${patientId}/treatments`}
+            data={treatments}
             columns={treatmentColumns}
             onEdit={handleEditTreatment}
             onView={handleViewTreatment}
