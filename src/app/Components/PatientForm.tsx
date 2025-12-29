@@ -1,10 +1,12 @@
 "use client";
 import { useState, useEffect } from "react";
 import { InputText } from "primereact/inputtext";
+import { InputTextarea } from "primereact/inputtextarea";
 import { Dropdown } from "primereact/dropdown";
 import { Button } from "primereact/button";
 import { useAppRouter } from "../context/RouterContext";
 import Table from "./Table";
+import MediaSection from "./MediaSection";
 
 interface PatientFormProps {
   patientId?: string;
@@ -23,6 +25,7 @@ export default function PatientForm({ patientId }: PatientFormProps) {
     age: "",
     gender: "",
     phone: "",
+    medicalConditions: "",
     status: "Active",
   });
 
@@ -164,6 +167,16 @@ export default function PatientForm({ patientId }: PatientFormProps) {
               className="w-full"
             />
           </div>
+          <div>
+            <label className="block mb-2">Previous Medical Conditions</label>
+            <InputTextarea
+              value={formData["medicalConditions"] || ""}
+              onChange={(e) =>
+                setFormData({ ...formData, medicalConditions: e.target.value })
+              }
+              className="w-full"
+            />
+          </div>
 
           <div>
             <label className="block mb-2">Status</label>
@@ -191,7 +204,10 @@ export default function PatientForm({ patientId }: PatientFormProps) {
           </div>
         </div>
       </form>
-
+      {/* Patient Media */}
+      {patientId && (
+        <MediaSection patientId={patientId} title="Patient Photos" />
+      )}
       {/* Treatments Table */}
       {patientId && (
         <div className="bg-white p-6 rounded-lg shadow">

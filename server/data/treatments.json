@@ -1,0 +1,11 @@
+[
+  {
+    "id": 1,
+    "patientId": 1,
+    "date": "2025-12-20T15:15:10.737Z",
+    "treatmentName": "RCT",
+    "toothNumber": "34",
+    "cost": 5000,
+    "status": "Completed"
+  }
+]
