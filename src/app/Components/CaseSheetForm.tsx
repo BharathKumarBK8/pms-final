@@ -16,7 +16,8 @@ export default function CasesheetForm({
   patientId,
   casesheetId,
 }: CasesheetFormProps) {
-  const { navigateToPatientsList } = useAppRouter();
+  const { navigateToPatientsList, navigateToAddTreatmentviaCasesheet } =
+    useAppRouter();
 
   const [formData, setFormData] = useState({
     date: new Date() as Date | null,
@@ -42,22 +43,28 @@ export default function CasesheetForm({
   useEffect(() => {
     if (!casesheetId) return;
 
-    const fetchCasesheet = async () => {
+    const fetchData = async () => {
       try {
-        const response = await fetch(
-          `http://localhost:5000/api/patients/${patientId}/casesheets/${casesheetId}`
-        );
-        const data = await response.json();
-        setFormData({
-          ...data,
-          appointment: data.appointment ? new Date(data.appointment) : null,
-        });
+        const [casesheetRes, treatmentsRes] = await Promise.all([
+          fetch(
+            `http://localhost:5000/api/patients/${patientId}/casesheets/${casesheetId}`
+          ),
+          fetch(
+            `http://localhost:5000/api/patients/${patientId}/casesheets/${casesheetId}/treatments`
+          ),
+        ]);
+
+        const casesheetData = await casesheetRes.json();
+        const treatmentsData = await treatmentsRes.json();
+
+        setFormData({ ...casesheetData, date: new Date(casesheetData.date) });
+        setTreatments(treatmentsData);
       } catch (error) {
-        console.error("Error fetching casesheet:", error);
+        console.error("Error fetching data:", error);
       }
     };
 
-    fetchCasesheet();
+    fetchData();
   }, [patientId, casesheetId]);
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -203,27 +210,28 @@ export default function CasesheetForm({
             />
           </div>
         </form>
-
-        {/* Treatments Table */}
-        {casesheetId && (
-          <div className="bg-white p-6 rounded-lg shadow">
-            <div className="flex justify-between items-center mb-4">
-              <h3 className="text-lg font-semibold">Treatment History</h3>
-              <Button
-                label="Add Treatment"
-                icon="pi pi-plus"
-                onClick={() => {}}
-              />
-            </div>
-
-            <Table
-              title={`CaseSheet ID: ${casesheetId}`}
-              data={treatments}
-              columns={treatmentColumns}
+      </div>
+      {/* Treatments Table */}
+      {casesheetId && (
+        <div className="bg-white p-6 rounded-lg shadow">
+          <div className="flex justify-between items-center mb-4">
+            <h3 className="text-lg font-semibold">Treatment History</h3>
+            <Button
+              label="Add Treatment"
+              icon="pi pi-plus"
+              onClick={() =>
+                navigateToAddTreatmentviaCasesheet(patientId, casesheetId)
+              }
             />
           </div>
-        )}
-      </div>
+
+          <Table
+            title={`CaseSheet ID: ${casesheetId}`}
+            data={treatments}
+            columns={treatmentColumns}
+          />
+        </div>
+      )}
     </div>
   );
 }

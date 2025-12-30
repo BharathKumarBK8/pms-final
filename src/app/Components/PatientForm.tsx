@@ -55,6 +55,7 @@ export default function PatientForm({ patientId }: PatientFormProps) {
 
   const casesheetColumns = [
     { field: "id", header: "Casesheet ID", sortable: true },
+    { field: "date", header: "Date", sortable: true },
     { field: "chiefComplaint", header: "Chief Complaint", sortable: true },
     { field: "onDiagnosis", header: "On Diagnosis", sortable: true },
     { field: "treatmentPlan", header: "Treatment Plan", sortable: true },
@@ -62,7 +63,6 @@ export default function PatientForm({ patientId }: PatientFormProps) {
     { field: "treatmentPending", header: "Treatment Pending", sortable: true },
     { field: "medicalHistory", header: "Medical History", sortable: true },
     { field: "payment", header: "Payment", sortable: true },
-    { field: "appointment", header: "Appointment", sortable: true },
   ];
 
   useEffect(() => {

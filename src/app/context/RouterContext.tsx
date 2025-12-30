@@ -13,6 +13,10 @@ interface RouterContextType {
   navigateToCasesheetAdd: (patientId: string) => void;
   navigateToCasesheetEdit: (patientId: string, casesheetId: string) => void;
   navigateToCasesheetView: (patientId: string, casesheetId: string) => void;
+  navigateToAddTreatmentviaCasesheet: (
+    patientId: string,
+    casesheetId: string
+  ) => void;
   navigateToPatientsList: () => void;
 }
 
@@ -41,6 +45,13 @@ export const RouterProvider: React.FC<{ children: React.ReactNode }> = ({
     router.push(`/patients/${patientId}/casesheets/edit/${casesheetId}`);
   const navigateToCasesheetView = (patientId: string, casesheetId: string) =>
     router.push(`/patients/${patientId}/casesheets/view/${casesheetId}`);
+  const navigateToAddTreatmentviaCasesheet = (
+    patientId: string,
+    casesheetId: string
+  ) =>
+    router.push(
+      `/patients/${patientId}/casesheets/${casesheetId}/treatments/add`
+    );
   const navigateToPatientsList = () => router.push(`/patients`);
 
   return (
@@ -56,6 +67,7 @@ export const RouterProvider: React.FC<{ children: React.ReactNode }> = ({
         navigateToCasesheetAdd,
         navigateToCasesheetEdit,
         navigateToCasesheetView,
+        navigateToAddTreatmentviaCasesheet,
         navigateToPatientsList,
       }}
     >

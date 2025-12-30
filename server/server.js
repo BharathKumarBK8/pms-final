@@ -68,7 +68,7 @@ app.get("/api/treatments", (req, res) => {
 app.get("/api/patients/:id/treatments", (req, res) => {
   const treatments = getTreatments();
   const patientTreatments = treatments.filter(
-    (t) => t.patientId === parseInt(req.params.id)
+    (t) => t.patientId == req.params.id // Use == instead of ===
   );
   res.json(patientTreatments);
 });
@@ -125,6 +125,53 @@ app.put("/api/patients/:patientId/casesheets/:id", (req, res) => {
   saveCasesheets(casesheets);
   res.json(casesheets[index]);
 });
+
+app.get("/api/patients/:patientId/casesheets/:id/treatments", (req, res) => {
+  const casesheets = getCasesheets();
+  const casesheet = casesheets.find(
+    (c) => c.id == req.params.id && c.patientId == req.params.patientId
+  );
+  if (!casesheet) return res.status(404).json({ error: "Not found" });
+  const treatments = getTreatments();
+  const patientTreatments = treatments.filter(
+    (t) => t.casesheetId == req.params.id
+  );
+  res.json(patientTreatments);
+});
+
+app.post("/api/patients/:patientId/casesheets/:id/treatments", (req, res) => {
+  const treatments = getTreatments();
+  const newTreatment = {
+    id: treatments.length + 1,
+    patientId: parseInt(req.params.patientId),
+    casesheetId: parseInt(req.params.id),
+    ...req.body,
+    cost: parseFloat(req.body.cost),
+  };
+  treatments.push(newTreatment);
+  saveTreatments(treatments);
+  res.status(201).json(newTreatment);
+});
+
+app.put(
+  "/api/patients/:patientId/casesheets/:id/treatments/:treatmentId",
+  (req, res) => {
+    const treatments = getTreatments();
+    const index = treatments.findIndex(
+      (t) => t.id === parseInt(req.params.treatmentId)
+    );
+    if (index === -1) return res.status(404).json({ error: "Not found" });
+    treatments[index] = {
+      ...treatments[index],
+      ...req.body,
+      patientId: parseInt(req.params.patientId),
+      casesheetId: parseInt(req.params.id),
+      cost: parseFloat(req.body.cost),
+    };
+    saveTreatments(treatments);
+    res.json(treatments[index]);
+  }
+);
 
 app.get("/api/treatments/:id", (req, res) => {
   const treatments = getTreatments();

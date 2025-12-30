@@ -2,11 +2,23 @@
   {
     "id": 1,
     "patientId": 1,
-    "date": "2025-11-30T18:30:00.000Z",
+    "date": "2025-12-29T18:30:00.000Z",
     "chiefComplaint": "Tooth Pain",
     "onDiagnosis": "Severe Cavity on #31",
     "treatmentPlan": "Extraction",
     "treatmentDone": "Extracted",
+    "treatmentPending": "None",
+    "medicalHistory": "None",
+    "payment": "Paid"
+  },
+  {
+    "id": 2,
+    "patientId": 1,
+    "date": "2025-12-30T18:30:00.000Z",
+    "chiefComplaint": "Tooth Color",
+    "onDiagnosis": "Plaque",
+    "treatmentPlan": "Cleaning",
+    "treatmentDone": "All Teeth Cleaned",
     "treatmentPending": "None",
     "medicalHistory": "None",
     "payment": "Paid"

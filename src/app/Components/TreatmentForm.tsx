@@ -8,16 +8,19 @@ import { useAppRouter } from "../context/RouterContext";
 
 interface TreatmentFormProps {
   patientId: string;
+  casesheetId?: string;
   treatmentId?: string;
 }
 
 export default function TreatmentForm({
   patientId,
+  casesheetId,
   treatmentId,
 }: TreatmentFormProps) {
-  const { navigateToPatientEdit } = useAppRouter();
+  const { navigateToPatientEdit, navigateToCasesheetEdit } = useAppRouter();
   const [formData, setFormData] = useState({
     patientId: patientId,
+    casesheetId: casesheetId,
     date: new Date() as Date | null,
     treatmentName: "",
     toothNumber: "",
@@ -44,9 +47,19 @@ export default function TreatmentForm({
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
-      const url = treatmentId
-        ? `http://localhost:5000/api/treatments/${treatmentId}`
-        : "http://localhost:5000/api/treatments";
+      let url;
+      if (casesheetId) {
+        // Use casesheet-specific endpoint
+        url = treatmentId
+          ? `http://localhost:5000/api/patients/${patientId}/casesheets/${casesheetId}/treatments/${treatmentId}`
+          : `http://localhost:5000/api/patients/${patientId}/casesheets/${casesheetId}/treatments`;
+      } else {
+        // Use direct patient endpoint
+        url = treatmentId
+          ? `http://localhost:5000/api/treatments/${treatmentId}`
+          : "http://localhost:5000/api/treatments";
+      }
+
       const method = treatmentId ? "PUT" : "POST";
 
       const response = await fetch(url, {
@@ -54,8 +67,11 @@ export default function TreatmentForm({
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(formData),
       });
+
       if (response.ok) {
-        navigateToPatientEdit(patientId);
+        if (patientId && !casesheetId) navigateToPatientEdit(patientId);
+        else if (patientId && casesheetId)
+          navigateToCasesheetEdit(patientId, casesheetId);
       }
     } catch (error) {
       console.error(
@@ -133,7 +149,11 @@ export default function TreatmentForm({
               label="Cancel"
               icon="pi pi-times"
               severity="secondary"
-              onClick={() => navigateToPatientEdit(patientId)}
+              onClick={() => {
+                if (patientId && !casesheetId) navigateToPatientEdit(patientId);
+                else if (patientId && casesheetId)
+                  navigateToCasesheetEdit(patientId, casesheetId);
+              }}
             />
           </div>
         </div>

@@ -3,6 +3,7 @@ import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import Layout from "@/app/Components/Layout";
 import { AutoComplete } from "primereact/autocomplete";
+import { Dropdown } from "primereact/dropdown";
 import { Button } from "primereact/button";
 import { Card } from "primereact/card";
 
@@ -11,11 +12,19 @@ interface PatientOption {
   value: number;
 }
 
+interface CasesheetOption {
+  label: string;
+  value: number;
+}
+
 export default function AddTreatmentPage() {
   const [selectedPatient, setSelectedPatient] = useState<PatientOption | null>(
     null
   );
+  const [selectedCasesheet, setSelectedCasesheet] =
+    useState<CasesheetOption | null>(null);
   const [patients, setPatients] = useState<PatientOption[]>([]);
+  const [casesheets, setCasesheets] = useState<CasesheetOption[]>([]);
   const [filteredPatients, setFilteredPatients] = useState<PatientOption[]>([]);
   const router = useRouter();
 
@@ -32,21 +41,53 @@ export default function AddTreatmentPage() {
       .catch((err) => console.error("Error fetching patients:", err));
   }, []);
 
+  useEffect(() => {
+    if (selectedPatient) {
+      setSelectedCasesheet(null);
+      fetch(
+        `http://localhost:5000/api/patients/${selectedPatient.value}/casesheets`
+      )
+        .then((res) => res.json())
+        .then((data) => {
+          const casesheetOptions: CasesheetOption[] = data.map(
+            (casesheet: any) => ({
+              label: `${casesheet.chiefComplaint} - ${new Date(
+                casesheet.date
+              ).toLocaleDateString()}`,
+              value: casesheet.id,
+            })
+          );
+          setCasesheets(casesheetOptions);
+        })
+        .catch((err) => console.error("Error fetching casesheets:", err));
+    } else {
+      setCasesheets([]);
+      setSelectedCasesheet(null);
+    }
+  }, [selectedPatient]);
+
   const searchPatients = (event: { query: string }) => {
     const query = event.query.toLowerCase();
-
-    setFilteredPatients(
-      patients.filter(
-        (p) =>
-          p.label.toLowerCase().includes(query) ||
-          p.value.toString().includes(query)
-      )
+    const filtered = patients.filter(
+      (p) =>
+        p.label.toLowerCase().includes(query) ||
+        p.value.toString().includes(query)
     );
+
+    if (filtered.length === 0 && query) {
+      setFilteredPatients([{ label: "No records found", value: -1 }]);
+    } else {
+      setFilteredPatients(filtered);
+    }
   };
 
   const handleNext = () => {
-    if (selectedPatient) {
-      router.push(`/patients/${selectedPatient.value}/treatments/add`);
+    console.log("selectedPatient:", selectedPatient);
+    console.log("selectedCasesheet:", selectedCasesheet);
+    if (selectedPatient && selectedCasesheet) {
+      router.push(
+        `/patients/${selectedPatient.value}/casesheets/${selectedCasesheet}/treatments/add`
+      );
     }
   };
 
@@ -57,7 +98,9 @@ export default function AddTreatmentPage() {
       </h1>
 
       <Card className="p-6">
-        <h2 className="text-lg font-semibold mb-4">Select Patient</h2>
+        <h2 className="text-lg font-semibold mb-4">
+          Select Patient & Casesheet
+        </h2>
 
         <div className="grid gap-4">
           <div>
@@ -74,12 +117,33 @@ export default function AddTreatmentPage() {
             />
           </div>
 
+          {selectedPatient && (
+            <div>
+              <label className="block mb-2">Casesheet</label>
+              <Dropdown
+                value={selectedCasesheet}
+                options={casesheets}
+                onChange={(e) => setSelectedCasesheet(e.value)}
+                optionLabel="label"
+                optionValue="value"
+                placeholder="Select a casesheet"
+                className="w-full"
+                disabled={casesheets.length === 0}
+              />
+              {casesheets.length === 0 && (
+                <small className="text-gray-500 mt-1 block">
+                  No casesheets found for this patient
+                </small>
+              )}
+            </div>
+          )}
+
           <div className="flex gap-2 mt-4">
             <Button
               label="Next"
               icon="pi pi-arrow-right"
               onClick={handleNext}
-              disabled={!selectedPatient}
+              disabled={!selectedPatient || !selectedCasesheet}
             />
           </div>
         </div>

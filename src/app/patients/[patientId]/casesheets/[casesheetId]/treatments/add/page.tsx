@@ -1,17 +1,16 @@
 "use client";
-import CasesheetForm from "@/app/Components/CaseSheetForm";
+import TreatmentForm from "@/app/Components/TreatmentForm";
 import Layout from "@/app/Components/Layout";
 import { useParams } from "next/navigation";
 
-const EditCaseSheet = () => {
+export default function AddTreatmentPage() {
   const params = useParams();
   const patientId = params.patientId as string;
   const casesheetId = params.casesheetId as string;
   return (
     <Layout>
-      <CasesheetForm patientId={patientId} casesheetId={casesheetId} />
+      <h1 className="text-2xl font-bold mb-4">Add Treatment</h1>
+      <TreatmentForm patientId={patientId} casesheetId={casesheetId} />
     </Layout>
   );
-};
-
-export default EditCaseSheet;
+}
