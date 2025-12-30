@@ -10,6 +10,9 @@ interface RouterContextType {
   navigateToAddTreatment: (patientId: string) => void;
   navigateToTreatmentEdit: (patientId: string, treatmentId: string) => void;
   navigateToTreatmentView: (patientId: string, treatmentId: string) => void;
+  navigateToCasesheetAdd: (patientId: string) => void;
+  navigateToCasesheetEdit: (patientId: string, casesheetId: string) => void;
+  navigateToCasesheetView: (patientId: string, casesheetId: string) => void;
   navigateToPatientsList: () => void;
 }
 
@@ -32,6 +35,12 @@ export const RouterProvider: React.FC<{ children: React.ReactNode }> = ({
     router.push(`/patients/${patientId}/treatments/edit/${treatmentId}`);
   const navigateToTreatmentView = (patientId: string, treatmentId: string) =>
     router.push(`/patients/${patientId}/treatments/view/${treatmentId}`);
+  const navigateToCasesheetAdd = (patientId: string) =>
+    router.push(`/patients/${patientId}/casesheets/add`);
+  const navigateToCasesheetEdit = (patientId: string, casesheetId: string) =>
+    router.push(`/patients/${patientId}/casesheets/edit/${casesheetId}`);
+  const navigateToCasesheetView = (patientId: string, casesheetId: string) =>
+    router.push(`/patients/${patientId}/casesheets/view/${casesheetId}`);
   const navigateToPatientsList = () => router.push(`/patients`);
 
   return (
@@ -44,6 +53,9 @@ export const RouterProvider: React.FC<{ children: React.ReactNode }> = ({
         navigateToAddTreatment,
         navigateToTreatmentEdit,
         navigateToTreatmentView,
+        navigateToCasesheetAdd,
+        navigateToCasesheetEdit,
+        navigateToCasesheetView,
         navigateToPatientsList,
       }}
     >

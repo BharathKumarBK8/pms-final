@@ -6,7 +6,6 @@ import { Dropdown } from "primereact/dropdown";
 import { Button } from "primereact/button";
 import { useAppRouter } from "../context/RouterContext";
 import Table from "./Table";
-import MediaSection from "./MediaSection";
 
 interface PatientFormProps {
   patientId?: string;
@@ -18,6 +17,9 @@ export default function PatientForm({ patientId }: PatientFormProps) {
     navigateToAddTreatment,
     navigateToTreatmentEdit,
     navigateToTreatmentView,
+    navigateToCasesheetEdit,
+    navigateToCasesheetView,
+    navigateToCasesheetAdd,
   } = useAppRouter();
 
   const [formData, setFormData] = useState({
@@ -30,6 +32,7 @@ export default function PatientForm({ patientId }: PatientFormProps) {
   });
 
   const [treatments, setTreatments] = useState<any[]>([]);
+  const [casesheets, setCasesheets] = useState<any[]>([]);
 
   const genderOptions = [
     { label: "Male", value: "Male" },
@@ -50,21 +53,35 @@ export default function PatientForm({ patientId }: PatientFormProps) {
     { field: "status", header: "Status", sortable: true },
   ];
 
+  const casesheetColumns = [
+    { field: "id", header: "Casesheet ID", sortable: true },
+    { field: "chiefComplaint", header: "Chief Complaint", sortable: true },
+    { field: "onDiagnosis", header: "On Diagnosis", sortable: true },
+    { field: "treatmentPlan", header: "Treatment Plan", sortable: true },
+    { field: "treatmentDone", header: "Treatment Done", sortable: true },
+    { field: "treatmentPending", header: "Treatment Pending", sortable: true },
+    { field: "medicalHistory", header: "Medical History", sortable: true },
+    { field: "payment", header: "Payment", sortable: true },
+    { field: "appointment", header: "Appointment", sortable: true },
+  ];
+
   useEffect(() => {
     if (!patientId) return;
 
     const fetchPatientAndTreatments = async () => {
       try {
-        const [patientRes, treatmentsRes] = await Promise.all([
+        const [patientRes, treatmentsRes, casesheetsRes] = await Promise.all([
           fetch(`http://localhost:5000/api/patients/${patientId}`),
           fetch(`http://localhost:5000/api/patients/${patientId}/treatments`),
+          fetch(`http://localhost:5000/api/patients/${patientId}/casesheets`),
         ]);
 
         const patientData = await patientRes.json();
         const treatmentsData = await treatmentsRes.json();
-
+        const casesheetsData = await casesheetsRes.json();
         setFormData(patientData);
         setTreatments(treatmentsData);
+        setCasesheets(casesheetsData);
       } catch (error) {
         console.error("Error fetching patient data:", error);
       }
@@ -113,6 +130,21 @@ export default function PatientForm({ patientId }: PatientFormProps) {
   const handleAddTreatment = () => {
     if (!patientId) return;
     navigateToAddTreatment(patientId);
+  };
+
+  const handleEditCasesheet = (rowData: any) => {
+    if (!patientId) return;
+    navigateToCasesheetEdit(patientId, rowData.id);
+  };
+
+  const handleViewCasesheet = (rowData: any) => {
+    if (!patientId) return;
+    navigateToCasesheetView(patientId, rowData.id);
+  };
+
+  const handleAddCasesheet = () => {
+    if (!patientId) return;
+    navigateToCasesheetAdd(patientId);
   };
 
   return (
@@ -204,9 +236,24 @@ export default function PatientForm({ patientId }: PatientFormProps) {
           </div>
         </div>
       </form>
-      {/* Patient Media */}
       {patientId && (
-        <MediaSection patientId={patientId} title="Patient Photos" />
+        <div className="bg-white p-6 rounded-lg shadow">
+          <div className="flex justify-between items-center mb-4">
+            <h3 className="text-lg font-semibold">Casesheets</h3>
+            <Button
+              label="Add Casesheet"
+              icon="pi pi-plus"
+              onClick={() => navigateToCasesheetAdd(patientId)}
+            />
+          </div>
+          <Table
+            title={`Patient ID: ${patientId}`}
+            data={casesheets}
+            columns={casesheetColumns}
+            onEdit={handleEditCasesheet}
+            onView={handleViewCasesheet}
+          />
+        </div>
       )}
       {/* Treatments Table */}
       {patientId && (

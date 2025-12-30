@@ -5,7 +5,7 @@
     "age": "24",
     "gender": "Male",
     "phone": "+91 99940 38356",
-    "status": "Active",
-    "medicalConditions": ""
+    "medicalConditions": "None",
+    "status": "Active"
   }
 ]

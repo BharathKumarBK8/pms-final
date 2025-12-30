@@ -73,6 +73,59 @@ app.get("/api/patients/:id/treatments", (req, res) => {
   res.json(patientTreatments);
 });
 
+// Casesheets
+const casesheetsPath = path.join(__dirname, "data", "casesheets.json");
+const getCasesheets = () =>
+  fs.existsSync(casesheetsPath)
+    ? JSON.parse(fs.readFileSync(casesheetsPath, "utf-8"))
+    : [];
+const saveCasesheets = (data) =>
+  fs.writeFileSync(casesheetsPath, JSON.stringify(data, null, 2));
+
+app.get("/api/patients/:id/casesheets", (req, res) => {
+  const casesheets = getCasesheets();
+  const patientCasesheets = casesheets.filter(
+    (c) => c.patientId === parseInt(req.params.id)
+  );
+  res.json(patientCasesheets);
+});
+
+app.get("/api/patients/:patientId/casesheets/:id", (req, res) => {
+  const casesheets = getCasesheets();
+  const casesheet = casesheets.find(
+    (c) =>
+      c.id === parseInt(req.params.id) &&
+      c.patientId === parseInt(req.params.patientId)
+  );
+  if (!casesheet) return res.status(404).json({ error: "Not found" });
+  res.json(casesheet);
+});
+
+app.post("/api/patients/:patientId/casesheets", (req, res) => {
+  const casesheets = getCasesheets();
+  const newCasesheet = {
+    id: casesheets.length + 1,
+    patientId: parseInt(req.params.patientId),
+    ...req.body,
+  };
+  casesheets.push(newCasesheet);
+  saveCasesheets(casesheets);
+  res.status(201).json(newCasesheet);
+});
+
+app.put("/api/patients/:patientId/casesheets/:id", (req, res) => {
+  const casesheets = getCasesheets();
+  const index = casesheets.findIndex(
+    (c) =>
+      c.id === parseInt(req.params.id) &&
+      c.patientId === parseInt(req.params.patientId)
+  );
+  if (index === -1) return res.status(404).json({ error: "Not found" });
+  casesheets[index] = { ...casesheets[index], ...req.body };
+  saveCasesheets(casesheets);
+  res.json(casesheets[index]);
+});
+
 app.get("/api/treatments/:id", (req, res) => {
   const treatments = getTreatments();
   const treatment = treatments.find((t) => t.id === parseInt(req.params.id));
