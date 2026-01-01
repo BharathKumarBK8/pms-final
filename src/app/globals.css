@@ -24,3 +24,167 @@ body {
   color: var(--foreground);
   font-family: Arial, Helvetica, sans-serif;
 }
+
+.main-content {
+  position: fixed;
+  top: 64px;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  padding: 1.5rem;
+  background-color: #f9fafb;
+  overflow: auto;
+  padding-left: calc(256px + 1.5rem); /* sidebar width + padding */
+  transition: padding-left 0.3s ease;
+}
+.main-content.sidebar-closed { 
+  padding-left: calc(80px + 1.5rem); /* collapsed sidebar width + padding */
+}
+
+/* Enhanced Form Styles */
+.form-container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 1rem;
+}
+
+.form-card {
+  background: linear-gradient(135deg, #ffffff 0%, #f8fafc 100%);
+  padding: 2rem;
+  border-radius: 12px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+  border: 1px solid #e2e8f0;
+  margin-bottom: 2rem;
+}
+
+.form-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 1.5rem;
+}
+
+.form-field {
+  position: relative;
+}
+
+.form-label {
+  display: block;
+  margin-bottom: 0.5rem;
+  font-weight: 600;
+  color: #1e293b;
+  font-size: 0.875rem;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.form-field .p-inputtext,
+.form-field .p-dropdown,
+.form-field .p-inputtextarea {
+  width: 100%;
+  padding: 0.75rem 1rem;
+  border: 2px solid #e2e8f0;
+  border-radius: 8px;
+  font-size: 1rem;
+  transition: all 0.3s ease;
+  background: #ffffff;
+}
+
+.form-field .p-inputtext:focus,
+.form-field .p-dropdown:focus,
+.form-field .p-inputtextarea:focus {
+  border-color: #3b82f6;
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+  outline: none;
+}
+
+.form-field .p-inputtext:hover,
+.form-field .p-dropdown:hover,
+.form-field .p-inputtextarea:hover {
+  border-color: #94a3b8;
+}
+
+.form-actions {
+  grid-column: 1 / -1;
+  display: flex;
+  gap: 1rem;
+  justify-content: flex-end;
+  margin-top: 2rem;
+  padding-top: 1.5rem;
+  border-top: 1px solid #e2e8f0;
+}
+
+.section-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1.5rem;
+  padding-bottom: 1rem;
+  border-bottom: 2px solid #e2e8f0;
+}
+
+.section-title {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: #1e293b;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.section-title::before {
+  content: "📋";
+  font-size: 1.25rem;
+}
+
+/* Modern Minimalist Button Classes */
+.btn-primary {
+  background: #000000;
+  border: 1px solid #000000;
+  border-radius: 6px;
+  padding: 0.625rem 1.25rem;
+  color: white;
+  font-weight: 500;
+  font-size: 0.875rem;
+  transition: all 0.2s ease;
+  cursor: pointer;
+}
+
+.btn-primary:hover {
+  background: #1a1a1a;
+  border-color: #1a1a1a;
+}
+
+.btn-primary:active {
+  background: #0a0a0a;
+  transform: scale(0.98);
+}
+
+.btn-secondary {
+  background: transparent;
+  border: 1px solid #d1d5db;
+  border-radius: 6px;
+  padding: 0.625rem 1.25rem;
+  color: #374151;
+  font-weight: 500;
+  font-size: 0.875rem;
+  transition: all 0.2s ease;
+  cursor: pointer;
+}
+
+.btn-secondary:hover {
+  background: #f9fafb;
+  border-color: #9ca3af;
+}
+
+.btn-secondary:active {
+  background: #f3f4f6;
+  transform: scale(0.98);
+}
+
+/* Remove PrimeReact button overrides */
+.btn-primary.p-button,
+.btn-secondary.p-button {
+  box-shadow: none !important;
+  text-transform: none !important;
+  letter-spacing: normal !important;
+}

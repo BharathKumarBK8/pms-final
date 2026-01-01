@@ -50,7 +50,7 @@ export default function PatientsPage() {
         <Button
           label="Add Patient"
           icon="pi pi-plus"
-          className="p-button-rounded p-button-success"
+          className="btn-primary"
           onClick={() => navigateToPatientAdd()}
         />
       </div>

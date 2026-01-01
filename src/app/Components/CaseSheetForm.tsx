@@ -99,25 +99,32 @@ export default function CasesheetForm({
   };
 
   return (
-    <div className="space-y-6">
-      <div className="bg-white p-6 rounded-lg shadow">
-        <h2 className="text-xl font-semibold mb-4">
-          {casesheetId ? "Edit Casesheet" : "New Casesheet"}
+    <div className="form-container">
+      <form onSubmit={handleSubmit} className="form-card">
+        <h2
+          className="section-title"
+          style={{ marginBottom: "2rem", borderBottom: "none" }}
+        >
+          {mode === "add"
+            ? "New Casesheet"
+            : mode === "edit"
+            ? "Edit Casesheet"
+            : "Casesheet Details"}
         </h2>
-        <form onSubmit={handleSubmit} className="grid gap-4">
-          <div>
-            <label className="block mb-2">Date</label>
+        <div className="form-grid">
+          <div className="form-field">
+            <label className="form-label">Date</label>
             <Calendar
               disabled={isReadOnly}
               value={formData.date}
               onChange={(e) =>
                 setFormData({ ...formData, date: e.value as Date | null })
               }
-              className="w-full"
             />
           </div>
-          <div>
-            <label className="block mb-2">Chief Complaint</label>
+
+          <div className="form-field">
+            <label className="form-label">Chief Complaint</label>
             <InputTextarea
               value={formData.chiefComplaint}
               onChange={(e) =>
@@ -125,89 +132,83 @@ export default function CasesheetForm({
               }
               required
               disabled={isReadOnly}
-              className="w-full"
               rows={3}
             />
           </div>
 
-          <div>
-            <label className="block mb-2">On Diagnosis</label>
+          <div className="form-field">
+            <label className="form-label">On Diagnosis</label>
             <InputTextarea
               value={formData.onDiagnosis}
               onChange={(e) =>
                 setFormData({ ...formData, onDiagnosis: e.target.value })
               }
-              className="w-full"
               rows={3}
               disabled={isReadOnly}
             />
           </div>
 
-          <div>
-            <label className="block mb-2">Treatment Plan</label>
+          <div className="form-field">
+            <label className="form-label">Treatment Plan</label>
             <InputTextarea
               value={formData.treatmentPlan}
               onChange={(e) =>
                 setFormData({ ...formData, treatmentPlan: e.target.value })
               }
-              className="w-full"
               rows={3}
               disabled={isReadOnly}
             />
           </div>
 
-          <div>
-            <label className="block mb-2">Treatment Done</label>
+          <div className="form-field">
+            <label className="form-label">Treatment Done</label>
             <InputTextarea
               value={formData.treatmentDone}
               onChange={(e) =>
                 setFormData({ ...formData, treatmentDone: e.target.value })
               }
-              className="w-full"
               rows={3}
               disabled={isReadOnly}
             />
           </div>
 
-          <div>
-            <label className="block mb-2">Treatment Pending</label>
+          <div className="form-field">
+            <label className="form-label">Treatment Pending</label>
             <InputTextarea
               value={formData.treatmentPending}
               onChange={(e) =>
                 setFormData({ ...formData, treatmentPending: e.target.value })
               }
-              className="w-full"
               rows={3}
               disabled={isReadOnly}
             />
           </div>
 
-          <div>
-            <label className="block mb-2">Medical History</label>
+          <div className="form-field">
+            <label className="form-label">Medical History</label>
             <InputTextarea
               value={formData.medicalHistory}
               onChange={(e) =>
                 setFormData({ ...formData, medicalHistory: e.target.value })
               }
-              className="w-full"
               rows={3}
               disabled={isReadOnly}
             />
           </div>
 
-          <div>
-            <label className="block mb-2">Payment</label>
+          <div className="form-field">
+            <label className="form-label">Payment</label>
             <InputText
               value={formData.payment}
               onChange={(e) =>
                 setFormData({ ...formData, payment: e.target.value })
               }
-              className="w-full"
               disabled={isReadOnly}
             />
           </div>
+
           {mode !== "view" && (
-            <div className="flex gap-2 mt-4">
+            <div className="form-actions">
               <Button
                 type="submit"
                 label={casesheetId ? "Update" : "Save"}
@@ -222,16 +223,17 @@ export default function CasesheetForm({
               />
             </div>
           )}
-        </form>
-      </div>
-      {/* Treatments Table */}
+        </div>
+      </form>
+
       {casesheetId && (
-        <div className="bg-white p-6 rounded-lg shadow">
-          <div className="flex justify-between items-center mb-4">
-            <h3 className="text-lg font-semibold">Treatment History</h3>
+        <div className="form-card">
+          <div className="section-header">
+            <h3 className="section-title">Treatment History</h3>
             {mode !== "view" && (
               <Button
                 label="Add Treatment"
+                className="btn-primary"
                 icon="pi pi-plus"
                 onClick={() =>
                   navigateToAddTreatmentviaCasesheet(patientId, casesheetId)

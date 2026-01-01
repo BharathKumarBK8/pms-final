@@ -30,7 +30,6 @@ export default function PatientForm({ patientId, mode }: PatientFormProps) {
   });
 
   const isReadOnly = mode === "view";
-
   const [casesheets, setCasesheets] = useState<any[]>([]);
 
   const genderOptions = [
@@ -120,12 +119,11 @@ export default function PatientForm({ patientId, mode }: PatientFormProps) {
   };
 
   return (
-    <div className="space-y-6">
-      {/* Patient Form */}
-      <form onSubmit={handleSubmit} className="bg-white p-6 rounded-lg shadow">
-        <div className="grid gap-4">
-          <div>
-            <label className="block mb-2">Name</label>
+    <div className="form-container">
+      <form onSubmit={handleSubmit} className="form-card">
+        <div className="form-grid">
+          <div className="form-field">
+            <label className="form-label">Name</label>
             <InputText
               disabled={isReadOnly}
               value={formData.name}
@@ -133,12 +131,11 @@ export default function PatientForm({ patientId, mode }: PatientFormProps) {
                 setFormData({ ...formData, name: e.target.value })
               }
               required
-              className="w-full"
             />
           </div>
 
-          <div>
-            <label className="block mb-2">Age</label>
+          <div className="form-field">
+            <label className="form-label">Age</label>
             <InputText
               disabled={isReadOnly}
               type="number"
@@ -147,24 +144,22 @@ export default function PatientForm({ patientId, mode }: PatientFormProps) {
                 setFormData({ ...formData, age: e.target.value })
               }
               required
-              className="w-full"
             />
           </div>
 
-          <div>
-            <label className="block mb-2">Gender</label>
+          <div className="form-field">
+            <label className="form-label">Gender</label>
             <Dropdown
               value={formData.gender}
               options={genderOptions}
               onChange={(e) => setFormData({ ...formData, gender: e.value })}
               disabled={isReadOnly}
               required
-              className="w-full"
             />
           </div>
 
-          <div>
-            <label className="block mb-2">Phone</label>
+          <div className="form-field">
+            <label className="form-label">Phone</label>
             <InputText
               value={formData.phone}
               onChange={(e) =>
@@ -172,37 +167,37 @@ export default function PatientForm({ patientId, mode }: PatientFormProps) {
               }
               required
               disabled={isReadOnly}
-              className="w-full"
             />
           </div>
-          <div>
-            <label className="block mb-2">Previous Medical Conditions</label>
+
+          <div className="form-field">
+            <label className="form-label">Previous Medical Conditions</label>
             <InputTextarea
               value={formData["medicalConditions"] || ""}
               onChange={(e) =>
                 setFormData({ ...formData, medicalConditions: e.target.value })
               }
-              className="w-full"
               disabled={isReadOnly}
             />
           </div>
 
-          <div>
-            <label className="block mb-2">Status</label>
+          <div className="form-field">
+            <label className="form-label">Status</label>
             <Dropdown
               value={formData.status}
               options={statusOptions}
               onChange={(e) => setFormData({ ...formData, status: e.value })}
-              className="w-full"
               disabled={isReadOnly}
             />
           </div>
+
           {mode !== "view" && (
-            <div className="flex gap-2 mt-4">
+            <div className="form-actions">
               <Button
                 type="submit"
                 label={patientId ? "Update" : "Save"}
                 icon="pi pi-check"
+                className="btn-secondary"
               />
               <Button
                 type="button"
@@ -215,13 +210,15 @@ export default function PatientForm({ patientId, mode }: PatientFormProps) {
           )}
         </div>
       </form>
+
       {patientId && (
-        <div className="bg-white p-6 rounded-lg shadow">
-          <div className="flex justify-between items-center mb-4">
-            <h3 className="text-lg font-semibold">Casesheets</h3>
+        <div className="form-card">
+          <div className="section-header">
+            <h3 className="section-title">Casesheets</h3>
             {mode !== "view" && (
               <Button
                 label="Add Casesheet"
+                className="btn-primary"
                 icon="pi pi-plus"
                 onClick={handleAddCasesheet}
               />

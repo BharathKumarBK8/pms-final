@@ -43,7 +43,7 @@ export default function TreatmentsPage() {
         <Button
           label="Add Treatment"
           icon="pi pi-plus"
-          className="p-button-rounded p-button-success"
+          className="btn-primary"
           onClick={handleAddTreatment}
         />
       </div>

@@ -1,6 +1,5 @@
 "use client";
 
-import { useState } from "react";
 import Link from "next/link";
 import {
   FiHome,
@@ -11,6 +10,7 @@ import {
 } from "react-icons/fi";
 import { LiaToothSolid } from "react-icons/lia";
 import { RiBillLine } from "react-icons/ri";
+import "./Sidebar.css";
 
 const menuItems = [
   { name: "Dashboard", icon: <FiHome size={20} />, href: "/" },
@@ -29,38 +29,23 @@ const menuItems = [
   { name: "Settings", icon: <FiSettings size={20} />, href: "/settings" },
 ];
 
-export default function Sidebar() {
-  const [open, setOpen] = useState(true);
+interface SidebarProps {
+  open: boolean;
+  setOpen: (open: boolean) => void;
+}
 
+export default function Sidebar({ open, setOpen }: SidebarProps) {
   return (
-    <aside
-      className={`h-screen bg-gradient-to-b from-white to-blue-50 shadow-[4px_0_12px_rgba(0,0,0,0.1)]
-                  transition-all duration-300 ${
-                    open ? "w-64" : "w-20"
-                  } flex flex-col`}
-    >
-      {/* Toggle Button */}
-      <button
-        className="p-4 flex items-center text-blue-600 hover:text-blue-700 transition"
-        onClick={() => setOpen(!open)}
-      >
+    <aside className="sidebar" style={{ width: open ? "256px" : "80px" }}>
+      <button className="sidebar-toggle" onClick={() => setOpen(!open)}>
         <FiMenu size={22} />
       </button>
 
-      {/* Menu */}
-      <nav className="mt-4 flex flex-col gap-2">
+      <nav className="sidebar-nav">
         {menuItems.map((item) => (
-          <Link
-            key={item.name}
-            href={item.href}
-            className="flex items-center gap-4 px-4 py-3 rounded-md 
-                       hover:bg-blue-100 transition-colors"
-          >
-            <span className="text-blue-600">{item.icon}</span>
-
-            {open && (
-              <span className="text-gray-700 font-medium">{item.name}</span>
-            )}
+          <Link key={item.name} href={item.href} className="sidebar-item">
+            <span>{item.icon}</span>
+            {open && <span>{item.name}</span>}
           </Link>
         ))}
       </nav>

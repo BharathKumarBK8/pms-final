@@ -53,12 +53,10 @@ export default function TreatmentForm({
     try {
       let url;
       if (casesheetId) {
-        // Use casesheet-specific endpoint
         url = treatmentId
           ? `http://localhost:5000/api/patients/${patientId}/casesheets/${casesheetId}/treatments/${treatmentId}`
           : `http://localhost:5000/api/patients/${patientId}/casesheets/${casesheetId}/treatments`;
       } else {
-        // Use direct patient endpoint
         url = treatmentId
           ? `http://localhost:5000/api/treatments/${treatmentId}`
           : "http://localhost:5000/api/treatments";
@@ -86,11 +84,21 @@ export default function TreatmentForm({
   };
 
   return (
-    <div className="space-y-6">
-      <form onSubmit={handleSubmit} className="bg-white p-6 rounded-lg shadow">
-        <div className="grid gap-4">
-          <div>
-            <label className="block mb-2">Date</label>
+    <div className="form-container">
+      <form onSubmit={handleSubmit} className="form-card">
+        <h2
+          className="section-title"
+          style={{ marginBottom: "2rem", borderBottom: "none" }}
+        >
+          {mode === "add"
+            ? "New Treatment"
+            : mode === "edit"
+            ? "Edit Treatment"
+            : "Treatment Details"}
+        </h2>
+        <div className="form-grid">
+          <div className="form-field">
+            <label className="form-label">Date</label>
             <Calendar
               value={formData.date}
               onChange={(e) =>
@@ -98,11 +106,11 @@ export default function TreatmentForm({
               }
               required
               disabled={isReadOnly}
-              className="w-full"
             />
           </div>
-          <div>
-            <label className="block mb-2">Treatment Name</label>
+
+          <div className="form-field">
+            <label className="form-label">Treatment Name</label>
             <InputText
               value={formData.treatmentName}
               onChange={(e) =>
@@ -110,22 +118,22 @@ export default function TreatmentForm({
               }
               disabled={isReadOnly}
               required
-              className="w-full"
             />
           </div>
-          <div>
-            <label className="block mb-2">Tooth Number</label>
+
+          <div className="form-field">
+            <label className="form-label">Tooth Number</label>
             <InputText
               value={formData.toothNumber}
               onChange={(e) =>
                 setFormData({ ...formData, toothNumber: e.target.value })
               }
-              className="w-full"
               disabled={isReadOnly}
             />
           </div>
-          <div>
-            <label className="block mb-2">Cost</label>
+
+          <div className="form-field">
+            <label className="form-label">Cost</label>
             <InputText
               type="number"
               value={formData.cost}
@@ -134,28 +142,30 @@ export default function TreatmentForm({
               }
               required
               disabled={isReadOnly}
-              className="w-full"
             />
           </div>
-          <div>
-            <label className="block mb-2">Status</label>
+
+          <div className="form-field">
+            <label className="form-label">Status</label>
             <Dropdown
               value={formData.status}
               options={statusOptions}
               onChange={(e) => setFormData({ ...formData, status: e.value })}
-              className="w-full"
               disabled={isReadOnly}
             />
           </div>
+
           {mode !== "view" && (
-            <div className="flex gap-2 mt-4">
+            <div className="form-actions">
               <Button
+                className="btn-primary"
                 type="submit"
                 label={treatmentId ? "Update" : "Save"}
                 icon="pi pi-check"
               />
               <Button
                 type="button"
+                className="btn-secondary"
                 label="Cancel"
                 icon="pi pi-times"
                 severity="secondary"

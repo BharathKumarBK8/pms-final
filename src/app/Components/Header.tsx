@@ -1,15 +1,15 @@
 "use client";
 
 import { FiBell, FiUser } from "react-icons/fi";
+import "./Header.css";
 
 export default function Header() {
   return (
-    <header className="w-full h-16 bg-blue-50 shadow-md border-b border-blue-100 flex items-center justify-between px-6">
-      <h1 className="font-semibold text-lg">Patient Management System</h1>
-
-      <div className="flex items-center gap-6">
-        <FiBell size={22} className="text-gray-600 cursor-pointer" />
-        <FiUser size={26} className="text-gray-700 cursor-pointer" />
+    <header className="header">
+      <h1>Patient Management System</h1>
+      <div className="header-actions">
+        <FiBell size={22} />
+        <FiUser size={26} />
       </div>
     </header>
   );
