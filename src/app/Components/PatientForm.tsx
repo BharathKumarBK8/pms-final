@@ -15,9 +15,6 @@ interface PatientFormProps {
 export default function PatientForm({ patientId, mode }: PatientFormProps) {
   const {
     navigateToPatientsList,
-    navigateToAddTreatment,
-    navigateToTreatmentEdit,
-    navigateToTreatmentView,
     navigateToCasesheetEdit,
     navigateToCasesheetView,
     navigateToCasesheetAdd,
@@ -34,7 +31,6 @@ export default function PatientForm({ patientId, mode }: PatientFormProps) {
 
   const isReadOnly = mode === "view";
 
-  const [treatments, setTreatments] = useState<any[]>([]);
   const [casesheets, setCasesheets] = useState<any[]>([]);
 
   const genderOptions = [
@@ -45,15 +41,6 @@ export default function PatientForm({ patientId, mode }: PatientFormProps) {
   const statusOptions = [
     { label: "Active", value: "Active" },
     { label: "Inactive", value: "Inactive" },
-  ];
-
-  const treatmentColumns = [
-    { field: "id", header: "Treatment ID", sortable: true },
-    { field: "date", header: "Date", sortable: true },
-    { field: "treatmentName", header: "Treatment", sortable: true },
-    { field: "toothNumber", header: "Tooth Number", sortable: true },
-    { field: "cost", header: "Cost", sortable: true },
-    { field: "status", header: "Status", sortable: true },
   ];
 
   const casesheetColumns = [
@@ -71,26 +58,23 @@ export default function PatientForm({ patientId, mode }: PatientFormProps) {
   useEffect(() => {
     if (!patientId) return;
 
-    const fetchPatientAndTreatments = async () => {
+    const fetchPatientAndCasesheets = async () => {
       try {
-        const [patientRes, treatmentsRes, casesheetsRes] = await Promise.all([
+        const [patientRes, casesheetsRes] = await Promise.all([
           fetch(`http://localhost:5000/api/patients/${patientId}`),
-          fetch(`http://localhost:5000/api/patients/${patientId}/treatments`),
           fetch(`http://localhost:5000/api/patients/${patientId}/casesheets`),
         ]);
 
         const patientData = await patientRes.json();
-        const treatmentsData = await treatmentsRes.json();
         const casesheetsData = await casesheetsRes.json();
         setFormData(patientData);
-        setTreatments(treatmentsData);
         setCasesheets(casesheetsData);
       } catch (error) {
         console.error("Error fetching patient data:", error);
       }
     };
 
-    fetchPatientAndTreatments();
+    fetchPatientAndCasesheets();
   }, [patientId]);
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -118,21 +102,6 @@ export default function PatientForm({ patientId, mode }: PatientFormProps) {
         error
       );
     }
-  };
-
-  const handleEditTreatment = (rowData: any) => {
-    if (!patientId) return;
-    navigateToTreatmentEdit(patientId, rowData.id);
-  };
-
-  const handleViewTreatment = (rowData: any) => {
-    if (!patientId) return;
-    navigateToTreatmentView(patientId, rowData.id);
-  };
-
-  const handleAddTreatment = () => {
-    if (!patientId) return;
-    navigateToAddTreatment(patientId);
   };
 
   const handleEditCasesheet = (rowData: any) => {
@@ -254,7 +223,7 @@ export default function PatientForm({ patientId, mode }: PatientFormProps) {
               <Button
                 label="Add Casesheet"
                 icon="pi pi-plus"
-                onClick={() => navigateToCasesheetAdd(patientId)}
+                onClick={handleAddCasesheet}
               />
             )}
           </div>
@@ -264,30 +233,6 @@ export default function PatientForm({ patientId, mode }: PatientFormProps) {
             columns={casesheetColumns}
             onEdit={handleEditCasesheet}
             onView={handleViewCasesheet}
-            mode={mode}
-          />
-        </div>
-      )}
-      {/* Treatments Table */}
-      {patientId && (
-        <div className="bg-white p-6 rounded-lg shadow">
-          <div className="flex justify-between items-center mb-4">
-            <h3 className="text-lg font-semibold">Treatment History</h3>
-            {mode !== "view" && (
-              <Button
-                label="Add Treatment"
-                icon="pi pi-plus"
-                onClick={handleAddTreatment}
-              />
-            )}
-          </div>
-
-          <Table
-            title={`Patient ID: ${patientId}`}
-            data={treatments}
-            columns={treatmentColumns}
-            onEdit={handleEditTreatment}
-            onView={handleViewTreatment}
             mode={mode}
           />
         </div>

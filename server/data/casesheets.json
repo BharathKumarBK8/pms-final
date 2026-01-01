@@ -1,1 +1,14 @@
-[]
+[
+  {
+    "id": 1,
+    "patientId": 1,
+    "date": "2025-12-31T18:30:00.000Z",
+    "chiefComplaint": "Tooth Pain",
+    "onDiagnosis": "Severe Cavity on #31",
+    "treatmentPlan": "Extraction",
+    "treatmentDone": "Extracted",
+    "treatmentPending": "None",
+    "medicalHistory": "None",
+    "payment": "Paid"
+  }
+]

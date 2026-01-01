@@ -1,1 +1,11 @@
-[]
+[
+  {
+    "id": 1,
+    "name": "A.S.Bharath Kumar",
+    "age": "24",
+    "gender": "Male",
+    "phone": "+91 99940 38356",
+    "medicalConditions": "None",
+    "status": "Active"
+  }
+]
