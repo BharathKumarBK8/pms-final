@@ -10,7 +10,11 @@ export default function AddTreatmentPage() {
   return (
     <Layout>
       <h1 className="text-2xl font-bold mb-4">Add Treatment</h1>
-      <TreatmentForm patientId={patientId} casesheetId={casesheetId} />
+      <TreatmentForm
+        patientId={patientId}
+        casesheetId={casesheetId}
+        mode="add"
+      />
     </Layout>
   );
 }

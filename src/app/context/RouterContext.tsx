@@ -30,21 +30,21 @@ export const RouterProvider: React.FC<{ children: React.ReactNode }> = ({
   const navigateToPatientAdd = () => router.push(`/patients/add`);
   const navigateToTreatmentAdd = () => router.push(`/treatments/add`);
   const navigateToPatientEdit = (patientId: string) =>
-    router.push(`/patients/edit/${patientId}`);
+    router.push(`/patients/${patientId}/edit`);
   const navigateToPatientView = (patientId: string) =>
-    router.push(`/patients/view/${patientId}`);
+    router.push(`/patients/${patientId}`);
   const navigateToAddTreatment = (patientId: string) =>
     router.push(`/patients/${patientId}/treatments/add`);
   const navigateToTreatmentEdit = (patientId: string, treatmentId: string) =>
-    router.push(`/patients/${patientId}/treatments/edit/${treatmentId}`);
+    router.push(`/patients/${patientId}/treatments/${treatmentId}/edit`);
   const navigateToTreatmentView = (patientId: string, treatmentId: string) =>
-    router.push(`/patients/${patientId}/treatments/view/${treatmentId}`);
+    router.push(`/patients/${patientId}/treatments/${treatmentId}`);
   const navigateToCasesheetAdd = (patientId: string) =>
     router.push(`/patients/${patientId}/casesheets/add`);
   const navigateToCasesheetEdit = (patientId: string, casesheetId: string) =>
-    router.push(`/patients/${patientId}/casesheets/edit/${casesheetId}`);
+    router.push(`/patients/${patientId}/casesheets/${casesheetId}/edit`);
   const navigateToCasesheetView = (patientId: string, casesheetId: string) =>
-    router.push(`/patients/${patientId}/casesheets/view/${casesheetId}`);
+    router.push(`/patients/${patientId}/casesheets/${casesheetId}`);
   const navigateToAddTreatmentviaCasesheet = (
     patientId: string,
     casesheetId: string

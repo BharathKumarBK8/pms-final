@@ -9,9 +9,10 @@ import Table from "./Table";
 
 interface PatientFormProps {
   patientId?: string;
+  mode: "view" | "edit" | "add";
 }
 
-export default function PatientForm({ patientId }: PatientFormProps) {
+export default function PatientForm({ patientId, mode }: PatientFormProps) {
   const {
     navigateToPatientsList,
     navigateToAddTreatment,
@@ -30,6 +31,8 @@ export default function PatientForm({ patientId }: PatientFormProps) {
     medicalConditions: "",
     status: "Active",
   });
+
+  const isReadOnly = mode === "view";
 
   const [treatments, setTreatments] = useState<any[]>([]);
   const [casesheets, setCasesheets] = useState<any[]>([]);
@@ -155,6 +158,7 @@ export default function PatientForm({ patientId }: PatientFormProps) {
           <div>
             <label className="block mb-2">Name</label>
             <InputText
+              disabled={isReadOnly}
               value={formData.name}
               onChange={(e) =>
                 setFormData({ ...formData, name: e.target.value })
@@ -167,6 +171,7 @@ export default function PatientForm({ patientId }: PatientFormProps) {
           <div>
             <label className="block mb-2">Age</label>
             <InputText
+              disabled={isReadOnly}
               type="number"
               value={formData.age}
               onChange={(e) =>
@@ -183,6 +188,7 @@ export default function PatientForm({ patientId }: PatientFormProps) {
               value={formData.gender}
               options={genderOptions}
               onChange={(e) => setFormData({ ...formData, gender: e.value })}
+              disabled={isReadOnly}
               required
               className="w-full"
             />
@@ -196,6 +202,7 @@ export default function PatientForm({ patientId }: PatientFormProps) {
                 setFormData({ ...formData, phone: e.target.value })
               }
               required
+              disabled={isReadOnly}
               className="w-full"
             />
           </div>
@@ -207,6 +214,7 @@ export default function PatientForm({ patientId }: PatientFormProps) {
                 setFormData({ ...formData, medicalConditions: e.target.value })
               }
               className="w-full"
+              disabled={isReadOnly}
             />
           </div>
 
@@ -217,34 +225,38 @@ export default function PatientForm({ patientId }: PatientFormProps) {
               options={statusOptions}
               onChange={(e) => setFormData({ ...formData, status: e.value })}
               className="w-full"
+              disabled={isReadOnly}
             />
           </div>
-
-          <div className="flex gap-2 mt-4">
-            <Button
-              type="submit"
-              label={patientId ? "Update" : "Save"}
-              icon="pi pi-check"
-            />
-            <Button
-              type="button"
-              label="Cancel"
-              icon="pi pi-times"
-              severity="secondary"
-              onClick={() => navigateToPatientsList()}
-            />
-          </div>
+          {mode !== "view" && (
+            <div className="flex gap-2 mt-4">
+              <Button
+                type="submit"
+                label={patientId ? "Update" : "Save"}
+                icon="pi pi-check"
+              />
+              <Button
+                type="button"
+                label="Cancel"
+                icon="pi pi-times"
+                severity="secondary"
+                onClick={() => navigateToPatientsList()}
+              />
+            </div>
+          )}
         </div>
       </form>
       {patientId && (
         <div className="bg-white p-6 rounded-lg shadow">
           <div className="flex justify-between items-center mb-4">
             <h3 className="text-lg font-semibold">Casesheets</h3>
-            <Button
-              label="Add Casesheet"
-              icon="pi pi-plus"
-              onClick={() => navigateToCasesheetAdd(patientId)}
-            />
+            {mode !== "view" && (
+              <Button
+                label="Add Casesheet"
+                icon="pi pi-plus"
+                onClick={() => navigateToCasesheetAdd(patientId)}
+              />
+            )}
           </div>
           <Table
             title={`Patient ID: ${patientId}`}
@@ -252,6 +264,7 @@ export default function PatientForm({ patientId }: PatientFormProps) {
             columns={casesheetColumns}
             onEdit={handleEditCasesheet}
             onView={handleViewCasesheet}
+            mode={mode}
           />
         </div>
       )}
@@ -260,11 +273,13 @@ export default function PatientForm({ patientId }: PatientFormProps) {
         <div className="bg-white p-6 rounded-lg shadow">
           <div className="flex justify-between items-center mb-4">
             <h3 className="text-lg font-semibold">Treatment History</h3>
-            <Button
-              label="Add Treatment"
-              icon="pi pi-plus"
-              onClick={handleAddTreatment}
-            />
+            {mode !== "view" && (
+              <Button
+                label="Add Treatment"
+                icon="pi pi-plus"
+                onClick={handleAddTreatment}
+              />
+            )}
           </div>
 
           <Table
@@ -273,6 +288,7 @@ export default function PatientForm({ patientId }: PatientFormProps) {
             columns={treatmentColumns}
             onEdit={handleEditTreatment}
             onView={handleViewTreatment}
+            mode={mode}
           />
         </div>
       )}

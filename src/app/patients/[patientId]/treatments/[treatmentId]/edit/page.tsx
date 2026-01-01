@@ -1,6 +1,6 @@
 "use client";
-import Layout from "../../../../../Components/Layout";
-import TreatmentForm from "../../../../../Components/TreatmentForm";
+import Layout from "@/app/Components/Layout";
+import TreatmentForm from "@/app/Components/TreatmentForm";
 import { useParams } from "next/navigation";
 
 export default function EditTreatmentPage() {
@@ -13,7 +13,11 @@ export default function EditTreatmentPage() {
       <h1 className="text-2xl font-semibold text-gray-800 mb-4">
         Edit Treatment
       </h1>
-      <TreatmentForm patientId={patientId} treatmentId={treatmentId} />
+      <TreatmentForm
+        patientId={patientId}
+        treatmentId={treatmentId}
+        mode="edit"
+      />
     </Layout>
   );
 }

@@ -10,12 +10,14 @@ interface TreatmentFormProps {
   patientId: string;
   casesheetId?: string;
   treatmentId?: string;
+  mode: "view" | "edit" | "add";
 }
 
 export default function TreatmentForm({
   patientId,
   casesheetId,
   treatmentId,
+  mode,
 }: TreatmentFormProps) {
   const { navigateToPatientEdit, navigateToCasesheetEdit } = useAppRouter();
   const [formData, setFormData] = useState({
@@ -34,6 +36,8 @@ export default function TreatmentForm({
     { label: "Completed", value: "Completed" },
     { label: "Cancelled", value: "Cancelled" },
   ];
+
+  const isReadOnly = mode === "view";
 
   useEffect(() => {
     if (treatmentId) {
@@ -93,6 +97,7 @@ export default function TreatmentForm({
                 setFormData({ ...formData, date: e.value || null })
               }
               required
+              disabled={isReadOnly}
               className="w-full"
             />
           </div>
@@ -103,6 +108,7 @@ export default function TreatmentForm({
               onChange={(e) =>
                 setFormData({ ...formData, treatmentName: e.target.value })
               }
+              disabled={isReadOnly}
               required
               className="w-full"
             />
@@ -115,6 +121,7 @@ export default function TreatmentForm({
                 setFormData({ ...formData, toothNumber: e.target.value })
               }
               className="w-full"
+              disabled={isReadOnly}
             />
           </div>
           <div>
@@ -126,6 +133,7 @@ export default function TreatmentForm({
                 setFormData({ ...formData, cost: e.target.value })
               }
               required
+              disabled={isReadOnly}
               className="w-full"
             />
           </div>
@@ -136,26 +144,30 @@ export default function TreatmentForm({
               options={statusOptions}
               onChange={(e) => setFormData({ ...formData, status: e.value })}
               className="w-full"
+              disabled={isReadOnly}
             />
           </div>
-          <div className="flex gap-2 mt-4">
-            <Button
-              type="submit"
-              label={treatmentId ? "Update" : "Save"}
-              icon="pi pi-check"
-            />
-            <Button
-              type="button"
-              label="Cancel"
-              icon="pi pi-times"
-              severity="secondary"
-              onClick={() => {
-                if (patientId && !casesheetId) navigateToPatientEdit(patientId);
-                else if (patientId && casesheetId)
-                  navigateToCasesheetEdit(patientId, casesheetId);
-              }}
-            />
-          </div>
+          {mode !== "view" && (
+            <div className="flex gap-2 mt-4">
+              <Button
+                type="submit"
+                label={treatmentId ? "Update" : "Save"}
+                icon="pi pi-check"
+              />
+              <Button
+                type="button"
+                label="Cancel"
+                icon="pi pi-times"
+                severity="secondary"
+                onClick={() => {
+                  if (patientId && !casesheetId)
+                    navigateToPatientEdit(patientId);
+                  else if (patientId && casesheetId)
+                    navigateToCasesheetEdit(patientId, casesheetId);
+                }}
+              />
+            </div>
+          )}
         </div>
       </form>
     </div>
