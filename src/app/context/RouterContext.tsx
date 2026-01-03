@@ -24,7 +24,6 @@ interface RouterContextType {
     casesheetId: string,
     treatmentId: string
   ) => void;
-  navigateToPatientsList: () => void;
 }
 
 const RouterContext = createContext<RouterContextType | undefined>(undefined);
@@ -69,7 +68,6 @@ export const RouterProvider: React.FC<{ children: React.ReactNode }> = ({
     router.push(
       `/patients/${patientId}/casesheets/${casesheetId}/treatments/${treatmentId}`
     );
-  const navigateToPatientsList = () => router.push(`/patients`);
 
   return (
     <RouterContext.Provider
@@ -84,7 +82,6 @@ export const RouterProvider: React.FC<{ children: React.ReactNode }> = ({
         navigateToAddTreatmentviaCasesheet,
         navigateToEditTreatmentviaCasesheet,
         navigateToViewTreatmentviaCasesheet,
-        navigateToPatientsList,
       }}
     >
       {children}
