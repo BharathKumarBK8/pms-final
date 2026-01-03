@@ -1,12 +1,1 @@
-[
-  {
-    "id": 1,
-    "patientId": "1",
-    "casesheetId": "1",
-    "date": "2026-01-01T05:33:51.377Z",
-    "treatmentName": "Tooth Extraction",
-    "toothNumber": "31",
-    "cost": 1000,
-    "status": "Completed"
-  }
-]
+[]

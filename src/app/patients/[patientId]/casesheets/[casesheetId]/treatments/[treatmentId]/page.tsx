@@ -1,20 +1,19 @@
 "use client";
-import Layout from "@/app/Components/Layout";
 import TreatmentForm from "@/app/Components/TreatmentForm";
+import Layout from "@/app/Components/Layout";
 import { useParams } from "next/navigation";
 
-export default function EditTreatmentPage() {
+export default function ViewTreatmentPage() {
   const params = useParams();
   const patientId = params.patientId as string;
+  const casesheetId = params.casesheetId as string;
   const treatmentId = params.treatmentId as string;
-
   return (
     <Layout>
-      <h1 className="text-2xl font-semibold text-gray-800 mb-4">
-        View Treatment
-      </h1>
+      <h1 className="text-2xl font-bold mb-4">View Treatment</h1>
       <TreatmentForm
         patientId={patientId}
+        casesheetId={casesheetId}
         treatmentId={treatmentId}
         mode="view"
       />

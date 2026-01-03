@@ -15,7 +15,6 @@ export default function PatientsPage() {
     { field: "name", header: "Name", sortable: true },
     { field: "age", header: "Age", sortable: true },
     { field: "gender", header: "Gender", sortable: true },
-    { field: "phone", header: "Phone" },
     { field: "status", header: "Status", sortable: true },
   ];
 

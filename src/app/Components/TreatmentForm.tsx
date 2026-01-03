@@ -26,6 +26,7 @@ export default function TreatmentForm({
     date: new Date() as Date | null,
     treatmentName: "",
     toothNumber: "",
+    performedBy: "",
     cost: "",
     status: "Planned",
   });
@@ -37,16 +38,26 @@ export default function TreatmentForm({
     { label: "Cancelled", value: "Cancelled" },
   ];
 
+  const performedByOptions = [
+    { label: "Dr. Smith", value: "Dr. Smith" },
+    { label: "Dr. Johnson", value: "Dr. Johnson" },
+    { label: "Dr. Lee", value: "Dr. Lee" },
+  ];
+
   const isReadOnly = mode === "view";
 
   useEffect(() => {
     if (treatmentId) {
-      fetch(`http://localhost:5000/api/treatments/${treatmentId}`)
+      const url = casesheetId
+        ? `http://localhost:5000/api/patients/${patientId}/casesheets/${casesheetId}/treatments/${treatmentId}`
+        : `http://localhost:5000/api/treatments/${treatmentId}`;
+
+      fetch(url)
         .then((res) => res.json())
         .then((data) => setFormData({ ...data, date: new Date(data.date) }))
         .catch((err) => console.error("Error fetching treatment:", err));
     }
-  }, [treatmentId]);
+  }, [treatmentId, patientId, casesheetId]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -127,6 +138,18 @@ export default function TreatmentForm({
               value={formData.toothNumber}
               onChange={(e) =>
                 setFormData({ ...formData, toothNumber: e.target.value })
+              }
+              disabled={isReadOnly}
+            />
+          </div>
+
+          <div className="form-field">
+            <label className="form-label">Performed By</label>
+            <Dropdown
+              value={formData.performedBy}
+              options={performedByOptions}
+              onChange={(e) =>
+                setFormData({ ...formData, performedBy: e.target.value })
               }
               disabled={isReadOnly}
             />

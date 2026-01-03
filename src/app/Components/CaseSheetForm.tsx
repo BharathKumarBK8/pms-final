@@ -18,8 +18,12 @@ export default function CasesheetForm({
   casesheetId,
   mode,
 }: CasesheetFormProps) {
-  const { navigateToPatientsList, navigateToAddTreatmentviaCasesheet } =
-    useAppRouter();
+  const {
+    navigateToPatientsList,
+    navigateToAddTreatmentviaCasesheet,
+    navigateToEditTreatmentviaCasesheet,
+    navigateToViewTreatmentviaCasesheet,
+  } = useAppRouter();
 
   const [formData, setFormData] = useState({
     date: new Date() as Date | null,
@@ -70,6 +74,14 @@ export default function CasesheetForm({
 
     fetchData();
   }, [patientId, casesheetId]);
+
+  const handleViewTreatment = (treatment: any) => {
+    navigateToViewTreatmentviaCasesheet(patientId, casesheetId!, treatment.id);
+  };
+
+  const handleEditTreatment = (treatment: any) => {
+    navigateToEditTreatmentviaCasesheet(patientId, casesheetId!, treatment.id);
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -161,18 +173,6 @@ export default function CasesheetForm({
           </div>
 
           <div className="form-field">
-            <label className="form-label">Treatment Done</label>
-            <InputTextarea
-              value={formData.treatmentDone}
-              onChange={(e) =>
-                setFormData({ ...formData, treatmentDone: e.target.value })
-              }
-              rows={3}
-              disabled={isReadOnly}
-            />
-          </div>
-
-          <div className="form-field">
             <label className="form-label">Treatment Pending</label>
             <InputTextarea
               value={formData.treatmentPending}
@@ -184,40 +184,19 @@ export default function CasesheetForm({
             />
           </div>
 
-          <div className="form-field">
-            <label className="form-label">Medical History</label>
-            <InputTextarea
-              value={formData.medicalHistory}
-              onChange={(e) =>
-                setFormData({ ...formData, medicalHistory: e.target.value })
-              }
-              rows={3}
-              disabled={isReadOnly}
-            />
-          </div>
-
-          <div className="form-field">
-            <label className="form-label">Payment</label>
-            <InputText
-              value={formData.payment}
-              onChange={(e) =>
-                setFormData({ ...formData, payment: e.target.value })
-              }
-              disabled={isReadOnly}
-            />
-          </div>
-
           {mode !== "view" && (
             <div className="form-actions">
               <Button
                 type="submit"
                 label={casesheetId ? "Update" : "Save"}
                 icon="pi pi-check"
+                className="btn-secondary"
               />
               <Button
                 type="button"
                 label="Cancel"
                 icon="pi pi-times"
+                className="btn-secondary"
                 severity="secondary"
                 onClick={() => navigateToPatientsList()}
               />
@@ -247,6 +226,8 @@ export default function CasesheetForm({
             data={treatments}
             columns={treatmentColumns}
             mode={mode}
+            onView={handleViewTreatment}
+            onEdit={handleEditTreatment}
           />
         </div>
       )}

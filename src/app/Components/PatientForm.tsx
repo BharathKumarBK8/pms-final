@@ -47,11 +47,6 @@ export default function PatientForm({ patientId, mode }: PatientFormProps) {
     { field: "date", header: "Date", sortable: true },
     { field: "chiefComplaint", header: "Chief Complaint", sortable: true },
     { field: "onDiagnosis", header: "On Diagnosis", sortable: true },
-    { field: "treatmentPlan", header: "Treatment Plan", sortable: true },
-    { field: "treatmentDone", header: "Treatment Done", sortable: true },
-    { field: "treatmentPending", header: "Treatment Pending", sortable: true },
-    { field: "medicalHistory", header: "Medical History", sortable: true },
-    { field: "payment", header: "Payment", sortable: true },
   ];
 
   useEffect(() => {
@@ -204,6 +199,7 @@ export default function PatientForm({ patientId, mode }: PatientFormProps) {
                 label="Cancel"
                 icon="pi pi-times"
                 severity="secondary"
+                className="btn-secondary"
                 onClick={() => navigateToPatientsList()}
               />
             </div>

@@ -139,6 +139,21 @@ app.get("/api/patients/:patientId/casesheets/:id/treatments", (req, res) => {
   res.json(patientTreatments);
 });
 
+app.get(
+  "/api/patients/:patientId/casesheets/:casesheetId/treatments/:treatmentId",
+  (req, res) => {
+    const treatments = getTreatments();
+    const treatment = treatments.find(
+      (t) =>
+        t.id == req.params.treatmentId &&
+        t.casesheetId == req.params.casesheetId &&
+        t.patientId == req.params.patientId
+    );
+    if (!treatment) return res.status(404).json({ error: "Not found" });
+    res.json(treatment);
+  }
+);
+
 app.post("/api/patients/:patientId/casesheets/:id/treatments", (req, res) => {
   const treatments = getTreatments();
   const newTreatment = {

@@ -7,15 +7,22 @@ interface RouterContextType {
   navigateToTreatmentAdd: () => void;
   navigateToPatientEdit: (patientId: string) => void;
   navigateToPatientView: (patientId: string) => void;
-  navigateToAddTreatment: (patientId: string) => void;
-  navigateToTreatmentEdit: (patientId: string, treatmentId: string) => void;
-  navigateToTreatmentView: (patientId: string, treatmentId: string) => void;
   navigateToCasesheetAdd: (patientId: string) => void;
   navigateToCasesheetEdit: (patientId: string, casesheetId: string) => void;
   navigateToCasesheetView: (patientId: string, casesheetId: string) => void;
   navigateToAddTreatmentviaCasesheet: (
     patientId: string,
     casesheetId: string
+  ) => void;
+  navigateToEditTreatmentviaCasesheet: (
+    patientId: string,
+    casesheetId: string,
+    treatmentId: string
+  ) => void;
+  navigateToViewTreatmentviaCasesheet: (
+    patientId: string,
+    casesheetId: string,
+    treatmentId: string
   ) => void;
   navigateToPatientsList: () => void;
 }
@@ -33,12 +40,6 @@ export const RouterProvider: React.FC<{ children: React.ReactNode }> = ({
     router.push(`/patients/${patientId}/edit`);
   const navigateToPatientView = (patientId: string) =>
     router.push(`/patients/${patientId}`);
-  const navigateToAddTreatment = (patientId: string) =>
-    router.push(`/patients/${patientId}/treatments/add`);
-  const navigateToTreatmentEdit = (patientId: string, treatmentId: string) =>
-    router.push(`/patients/${patientId}/treatments/${treatmentId}/edit`);
-  const navigateToTreatmentView = (patientId: string, treatmentId: string) =>
-    router.push(`/patients/${patientId}/treatments/${treatmentId}`);
   const navigateToCasesheetAdd = (patientId: string) =>
     router.push(`/patients/${patientId}/casesheets/add`);
   const navigateToCasesheetEdit = (patientId: string, casesheetId: string) =>
@@ -52,6 +53,22 @@ export const RouterProvider: React.FC<{ children: React.ReactNode }> = ({
     router.push(
       `/patients/${patientId}/casesheets/${casesheetId}/treatments/add`
     );
+  const navigateToEditTreatmentviaCasesheet = (
+    patientId: string,
+    casesheetId: string,
+    treatmentId: string
+  ) =>
+    router.push(
+      `/patients/${patientId}/casesheets/${casesheetId}/treatments/${treatmentId}/edit`
+    );
+  const navigateToViewTreatmentviaCasesheet = (
+    patientId: string,
+    casesheetId: string,
+    treatmentId: string
+  ) =>
+    router.push(
+      `/patients/${patientId}/casesheets/${casesheetId}/treatments/${treatmentId}`
+    );
   const navigateToPatientsList = () => router.push(`/patients`);
 
   return (
@@ -61,13 +78,12 @@ export const RouterProvider: React.FC<{ children: React.ReactNode }> = ({
         navigateToTreatmentAdd,
         navigateToPatientEdit,
         navigateToPatientView,
-        navigateToAddTreatment,
-        navigateToTreatmentEdit,
-        navigateToTreatmentView,
         navigateToCasesheetAdd,
         navigateToCasesheetEdit,
         navigateToCasesheetView,
         navigateToAddTreatmentviaCasesheet,
+        navigateToEditTreatmentviaCasesheet,
+        navigateToViewTreatmentviaCasesheet,
         navigateToPatientsList,
       }}
     >
