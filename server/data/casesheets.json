@@ -1,1 +1,20 @@
-[]
+[
+  {
+    "id": 1,
+    "patientId": 1,
+    "date": "2026-01-04T03:43:02.582Z",
+    "chiefComplaint": "Tooth Pain ",
+    "onDiagnosis": "#31 Severe Cavity",
+    "treatmentPlan": "Extraction",
+    "treatmentPending": "None"
+  },
+  {
+    "id": 2,
+    "patientId": 1,
+    "date": "2026-01-04T03:45:17.436Z",
+    "chiefComplaint": "Smile",
+    "onDiagnosis": "Over Bite",
+    "treatmentPlan": "Ortho",
+    "treatmentPending": "Ortho"
+  }
+]

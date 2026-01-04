@@ -47,29 +47,18 @@ const TreatmentForm = forwardRef<TreatmentFormRef, TreatmentFormProps>(
 
     useEffect(() => {
       if (treatmentId) {
-        const url = casesheetId
-          ? `http://localhost:5000/api/patients/${patientId}/casesheets/${casesheetId}/treatments/${treatmentId}`
-          : `http://localhost:5000/api/treatments/${treatmentId}`;
-
-        fetch(url)
+        fetch(`http://localhost:5000/api/treatments/${treatmentId}`)
           .then((res) => res.json())
           .then((data) => setFormData({ ...data, date: new Date(data.date) }))
           .catch((err) => console.error("Error fetching treatment:", err));
       }
-    }, [treatmentId, patientId, casesheetId]);
+    }, [treatmentId]);
 
     const handleSubmit = async () => {
       try {
-        let url;
-        if (casesheetId) {
-          url = treatmentId
-            ? `http://localhost:5000/api/patients/${patientId}/casesheets/${casesheetId}/treatments/${treatmentId}`
-            : `http://localhost:5000/api/patients/${patientId}/casesheets/${casesheetId}/treatments`;
-        } else {
-          url = treatmentId
-            ? `http://localhost:5000/api/treatments/${treatmentId}`
-            : "http://localhost:5000/api/treatments";
-        }
+        const url = treatmentId
+          ? `http://localhost:5000/api/treatments/${treatmentId}`
+          : "http://localhost:5000/api/treatments";
 
         const method = treatmentId ? "PUT" : "POST";
 

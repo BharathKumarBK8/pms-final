@@ -62,7 +62,9 @@ const PatientForm = forwardRef<PatientFormRef, PatientFormProps>(
         try {
           const [patientRes, casesheetsRes] = await Promise.all([
             fetch(`http://localhost:5000/api/patients/${patientId}`),
-            fetch(`http://localhost:5000/api/patients/${patientId}/casesheets`),
+            fetch(
+              `http://localhost:5000/api/casesheets?patientId=${patientId}`
+            ),
           ]);
 
           const patientData = await patientRes.json();

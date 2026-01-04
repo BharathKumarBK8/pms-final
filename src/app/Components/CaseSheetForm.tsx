@@ -52,11 +52,9 @@ const CasesheetForm = forwardRef<CasesheetFormRef, CasesheetFormProps>(
       const fetchData = async () => {
         try {
           const [casesheetRes, treatmentsRes] = await Promise.all([
+            fetch(`http://localhost:5000/api/casesheets/${casesheetId}`),
             fetch(
-              `http://localhost:5000/api/patients/${patientId}/casesheets/${casesheetId}`
-            ),
-            fetch(
-              `http://localhost:5000/api/patients/${patientId}/casesheets/${casesheetId}/treatments`
+              `http://localhost:5000/api/treatments?patientId=${patientId}&casesheetId=${casesheetId}`
             ),
           ]);
 
@@ -92,15 +90,15 @@ const CasesheetForm = forwardRef<CasesheetFormRef, CasesheetFormProps>(
     const handleSubmit = async () => {
       try {
         const url = casesheetId
-          ? `http://localhost:5000/api/patients/${patientId}/casesheets/${casesheetId}`
-          : `http://localhost:5000/api/patients/${patientId}/casesheets`;
+          ? `http://localhost:5000/api/casesheets/${casesheetId}`
+          : `http://localhost:5000/api/casesheets`;
 
         const method = casesheetId ? "PUT" : "POST";
 
         const response = await fetch(url, {
           method,
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(formData),
+          body: JSON.stringify({ ...formData, patientId: parseInt(patientId) }),
         });
 
         if (response.ok && onSave) {
@@ -121,16 +119,6 @@ const CasesheetForm = forwardRef<CasesheetFormRef, CasesheetFormProps>(
     return (
       <div className="form-container">
         <div className="form-card">
-          <h2
-            className="section-title"
-            style={{ marginBottom: "2rem", borderBottom: "none" }}
-          >
-            {mode === "add"
-              ? "New Casesheet"
-              : mode === "edit"
-              ? "Edit Casesheet"
-              : "Casesheet Details"}
-          </h2>
           <div className="form-grid">
             <div className="form-field">
               <label className="form-label">Date</label>

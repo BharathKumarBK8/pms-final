@@ -45,7 +45,7 @@ export default function AddTreatmentPage() {
     if (selectedPatient) {
       setSelectedCasesheet(null);
       fetch(
-        `http://localhost:5000/api/patients/${selectedPatient.value}/casesheets`
+        `http://localhost:5000/api/casesheets?patientId=${selectedPatient.value}`
       )
         .then((res) => res.json())
         .then((data) => {
