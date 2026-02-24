@@ -4,6 +4,7 @@ import Table from "../Components/Table";
 import Layout from "../Components/Layout";
 import { Button } from "primereact/button";
 import { useAppRouter } from "../context/RouterContext";
+import ProtectedRoute from "../Components/ProtectedRoute";
 
 export default function TreatmentsPage() {
   const { navigateToTreatmentAdd } = useAppRouter();
@@ -37,17 +38,19 @@ export default function TreatmentsPage() {
   }, []);
 
   return (
-    <Layout>
-      <div className="flex justify-between items-center mb-4">
-        <h1 className="text-2xl font-semibold text-gray-800">Treatments</h1>
-        <Button
-          label="Add Treatment"
-          icon="pi pi-plus"
-          className="btn-primary"
-          onClick={handleAddTreatment}
-        />
-      </div>
-      <Table data={treatments} columns={columns} />
-    </Layout>
+    <ProtectedRoute>
+      <Layout>
+        <div className="flex justify-between items-center mb-4">
+          <h1 className="text-2xl font-semibold text-gray-800">Treatments</h1>
+          <Button
+            label="Add Treatment"
+            icon="pi pi-plus"
+            className="btn-primary"
+            onClick={handleAddTreatment}
+          />
+        </div>
+        <Table data={treatments} columns={columns} />
+      </Layout>
+    </ProtectedRoute>
   );
 }

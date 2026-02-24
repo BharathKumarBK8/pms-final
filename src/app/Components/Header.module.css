@@ -1,196 +1,111 @@
-/* Header Background */
+/* =========================
+   HEADER CONTAINER
+========================= */
+
 .header {
+  height: 64px;
+  width: 100%;
+  background: #111;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+  display: flex;
+  align-items: center;
   position: sticky;
   top: 0;
-  width: 100%;
   z-index: 50;
-  padding: 20px;
-  color: white;
-  background-color: #111;
 }
 
 .container {
-  max-width: 90vw;
-  margin: 0 auto;
-}
-
-/* ================= MOBILE HEADER ================= */
-.mobileHeader {
   width: 100%;
-  display: grid;
-  grid-template-columns: minmax(44px, 56px) 1fr minmax(44px, 56px);
-  align-items: center;
-}
-
-.menuToggle {
-  justify-self: start;
-  font-size: 28px;
-  background: none;
-  border: none;
-  color: white;
-}
-
-.mobileLogo {
-  justify-self: center;
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  max-width: 100%;
-  white-space: nowrap;
-}
-
-.mobileLogo span {
-  max-width: 140px;
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
-
-.cartBtn {
-  justify-self: end;
-  background: none;
-  border: none;
-  color: white;
-  font-size: 18px;
-  position: relative;
-  cursor: pointer;
-}
-
-/* Cart badge */
-.cartBadge {
-  position: absolute;
-  top: -10px;
-  right: -12px;
-  background: #6366f1;
-  color: white;
-  font-size: 11px;
-  font-weight: 700;
-  padding: 2px 7px;
-  border-radius: 999px;
-}
-
-/* ================= DESKTOP NAV ================= */
-.navDesktop {
+  padding: 0 24px;
   display: flex;
   align-items: center;
   justify-content: space-between;
 }
 
+/* =========================
+   LOGO
+========================= */
+
 .logo {
   display: flex;
   align-items: center;
   gap: 8px;
+  text-decoration: none;
+  color: #fff;
+  font-weight: 600;
+  font-size: 18px;
 }
 
 .logoText {
-  font-size: 24px;
-  font-weight: 700;
+  font-size: 18px;
+  font-weight: 600;
+  letter-spacing: 0.3px;
 }
 
-/* Nav Links */
-.navLinks {
-  display: flex;
-  gap: 3.5rem;
-}
+/* =========================
+   RIGHT ACTIONS
+========================= */
 
-.navLink {
-  position: relative;
+.actions {
   display: flex;
   align-items: center;
-  color: white;
-  text-decoration: none;
+  gap: 20px;
+}
+
+/* =========================
+   ICON BUTTON (Notifications)
+========================= */
+
+.iconBtn {
+  width: 38px;
+  height: 38px;
+  border-radius: 8px;
+  border: none;
+  background: transparent;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: background 0.2s ease, color 0.2s ease;
+  color: #fff;
   font-size: 16px;
 }
 
-.navLink:hover {
-  color: #c7d2fe;
-  transition: color 0.2s ease-in-out;
-}
-
-.navLink.active {
-  color: #a5b4fc;
-}
-
-.underline {
-  position: absolute;
-  left: -6px;
-  right: -6px;
-  bottom: -8px;
-  height: 4px;
-  background: #a5b4fc;
-  border-radius: 999px;
-  transform-origin: left;
-  transform: scaleX(0);
-}
-
-/* Right actions */
-.navActions {
-  display: flex;
-  gap: 20px;
-  align-items: baseline;
-}
-
-.iconBtn {
-  background: none;
-  border: none;
-  color: white;
-  font-size: 18px;
-  cursor: pointer;
-  position: relative;
-}
-
-/* ================= MOBILE MENU ================= */
-.navMobile {
-  margin-top: 16px;
-  min-height: 90vh;
-  background: #0a0a0a;
-  padding: 24px;
-  border-radius: 12px;
-  display: flex;
-  flex-direction: column;
-  gap: 16px;
-}
-
-.navMobileLink {
-  display: flex;
-  align-items: center;
-  color: white;
-  text-decoration: none;
-  font-size: 18px;
-}
-
-.navMobileLink:hover {
-  color: #c7d2fe;
-}
-
-.navMobileLink.active {
-  color: #a5b4fc;
-  font-weight: 600;
-}
-
-.userMobileGreeting{
-  color:var(--accent);
-}
-.userMobileGreeting span{
-  color:white
-}
-.userEmail{
-  color: white;
-  font-size: 0.85rem;
-}
-.userActions{
-  font-size: 1rem;
-}
-.userInfo{
-  padding: 1rem;
-  font-size: 1rem;
-}
-.userInfo span{
+.iconBtn:hover {
+  background: rgba(255, 255, 255, 0.06);
   color: var(--accent);
 }
 
-.navMobileDivider{
-  border-bottom: 1px solid #333;
+/* =========================
+   USER BUTTON
+========================= */
+
+.userBtn {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  padding: 6px 10px;
+  border-radius: 8px;
+  transition: background 0.2s ease;
+  color: #fff;
 }
+
+.userBtn:hover {
+  background: rgba(255, 255, 255, 0.06);
+}
+
+.userName {
+  font-size: 14px;
+  font-weight: 500;
+  color: #fff;
+}
+
+/* =========================
+   DROPDOWN
+========================= */
 
 .accountWrapper {
   position: relative;
@@ -198,48 +113,106 @@
 
 .dropdown {
   position: absolute;
-  top: 120%;
   right: 0;
-  background: var(--background);
-  color: white;
-  border-radius: 8px;
-  min-width: 250px;
-  box-shadow: 0 10px 30px rgba(0,0,0,0.1);
-  z-index: 50;
-  overflow: hidden;
+  top: 50px;
+  width: 240px;
+  background: #1a1a1a;
+  border-radius: 12px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+  padding: 12px 0;
+  animation: dropdownFade 0.15s ease-out;
+  z-index: 100;
 }
 
+@keyframes dropdownFade {
+  from {
+    opacity: 0;
+    transform: translateY(-6px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* =========================
+   USER INFO INSIDE DROPDOWN
+========================= */
+
+.userInfo {
+  padding: 0 16px 12px 16px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+  margin-bottom: 8px;
+}
+
+.userInfo strong {
+  display: block;
+  font-size: 14px;
+  color: #fff;
+}
+
+.userInfo div {
+  font-size: 12px;
+  color: rgba(255, 255, 255, 0.6);
+  margin-top: 2px;
+}
+
+.roleBadge {
+  display: inline-block;
+  margin-top: 6px;
+  padding: 3px 8px;
+  font-size: 11px;
+  border-radius: 20px;
+  background: rgba(165, 180, 252, 0.15);
+  color: var(--accent);
+  text-transform: capitalize;
+}
+
+/* =========================
+   DROPDOWN ITEMS
+========================= */
+
 .dropdownItem {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  padding: 10px 14px;
+  width: 100%;
+  padding: 10px 16px;
+  background: transparent;
+  border: none;
+  text-align: left;
   font-size: 14px;
   cursor: pointer;
-  background: none;
-  border: none;
-  width: 100%;
-  text-align: left;
+  color: #fff;
+  transition: background 0.2s ease, color 0.2s ease;
+  display: flex;
+  align-items: center;
+  gap: 8px;
 }
 
 .dropdownItem:hover {
-  color: var(--accent);
+  background: rgba(255, 255, 255, 0.06);
+  color: var(--accent-hover);
 }
 
+/* =========================
+   RESPONSIVE
+========================= */
 
-/* ================= RESPONSIVE ================= */
 @media (max-width: 1024px) {
-  .navDesktop {
-    display: none;
-  }
-
-  .mobileHeader {
-    display: grid;
+  .searchInput {
+    width: 180px;
   }
 }
 
-@media (min-width: 1025px) {
-  .mobileHeader {
+@media (max-width: 768px) {
+  .searchBox {
     display: none;
+  }
+
+  .userName {
+    display: none;
+  }
+
+  .container {
+    padding: 0 16px;
   }
 }

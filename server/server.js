@@ -1,14 +1,51 @@
 const express = require("express");
+const session = require("express-session");
+const cookieParser = require("cookie-parser");
+const passport = require("passport");
 const cors = require("cors");
 const fs = require("fs");
 const path = require("path");
 const multer = require("multer");
+require("dotenv").config();
+
+const JsonSessionStore = require("./utils/JsonSessionStore");
+const passportConfig = require("./passport"); // Import passport configuration
+
+const authRoutes = require("./routes/auth");
 
 const app = express();
-const PORT = 4000;
-
-app.use(cors());
 app.use(express.json());
+app.use(cookieParser());
+app.use(
+  cors({
+    origin: process.env.CLIENT_URL,
+    credentials: true,
+  }),
+);
+const PORT = 5000;
+
+app.use(
+  session({
+    store: new JsonSessionStore(),
+    secret: process.env.SESSION_SECRET,
+    resave: false,
+    saveUninitialized: false,
+    cookie: {
+      httpOnly: true,
+      secure: false,
+      sameSite: "lax",
+      maxAge: 1000 * 60 * 60 * 24,
+    },
+  }),
+);
+
+app.use(passport.initialize());
+app.use(passport.session());
+
+// Ensure passport configuration is initialized
+passportConfig;
+
+app.use("/auth", authRoutes);
 
 // Patients
 const patientsPath = path.join(__dirname, "data", "patients.json");

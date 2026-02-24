@@ -12,7 +12,7 @@ export interface User {
   id: string;
   role: "owner" | "admin" | "doctor" | "staff";
   email: string;
-  displayName?: string;
+  displayName: string;
 }
 
 export type UserType = User;
@@ -35,8 +35,7 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({
   const [loading, setLoading] = useState(true);
   const router = useRouter();
 
-  const API_BASE_URL =
-    process.env.NEXT_PUBLIC_API_BASE_URL || "http://localhost:4000";
+  const API_BASE_URL = "http://localhost:5000";
 
   const refreshMe = async (): Promise<UserType | null> => {
     setLoading(true);

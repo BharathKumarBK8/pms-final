@@ -1,42 +1,128 @@
+/* =========================
+   SIDEBAR CONTAINER
+========================= */
 .sidebar {
   position: fixed;
   left: 0;
   top: 64px;
   height: calc(100vh - 64px);
-  background: #111; /* dark background */
-  box-shadow: 4px 0 12px rgba(0,0,0,0.5);
-  transition: width 0.3s ease;
-  z-index: 10;
+  width: 256px;
+  background: #111;
+  border-right: 1px solid rgba(255, 255, 255, 0.06);
+  box-shadow: 4px 0 12px rgba(0, 0, 0, 0.5);
   display: flex;
   flex-direction: column;
+  z-index: 10;
+  transition: width 0.3s ease;
+  overflow: hidden;
 }
 
+.sidebar.collapsed {
+  width: 60px;
+}
+
+/* =========================
+   TOGGLE BUTTON
+========================= */
 .sidebar-toggle {
   padding: 1rem;
   display: flex;
   align-items: center;
   color: var(--accent);
-  transition: color 0.2s;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  transition: color 0.2s ease, justify-content 0.3s ease;
 }
 
-.sidebar-toggle:hover { color: var(--accent-hover); } /* slightly brighter on hover */
+.sidebar-toggle:hover {
+  color: var(--accent-hover);
+}
 
+.sidebar.collapsed .sidebar-toggle {
+  justify-content: center;
+}
+
+/* =========================
+   NAVIGATION
+========================= */
 .sidebar-nav {
   margin-top: 1rem;
   display: flex;
   flex-direction: column;
-  gap: 0.5rem;
+  gap: 4px;
+  padding: 0 8px;
 }
 
+/* =========================
+   SIDEBAR ITEM
+========================= */
 .sidebar-item {
   display: flex;
   align-items: center;
   gap: 1rem;
-  padding: 0.75rem 1rem;
-  border-radius: 0.375rem;
-  transition: background-color 0.2s, color 0.2s;
-  color: #fff; /* white text for readability */
+  padding: 0.75rem 0.9rem;
+  border-radius: 8px;
+  transition: background 0.2s, color 0.2s;
+  color: #fff;
+  text-decoration: none;
+  font-size: 14px;
+  overflow: hidden;
+  justify-content: flex-start;
 }
 
-.sidebar-item:hover { background-color: rgba(165,180,252,0.1); } /* subtle blue hover */
-.sidebar-item span:first-child { color: var(--accent); } /* icon accent */
+/* ICON */
+.sidebar-icon {
+  color: var(--accent);
+  display: flex;
+  align-items: center;
+  flex-shrink: 0;
+  transition: margin 0.3s ease;
+}
+
+/* TEXT */
+.sidebar-text {
+  transition: width 0.25s ease, opacity 0.25s ease, margin 0.25s ease;
+  white-space: nowrap;
+  opacity: 1;
+  width: auto;
+  overflow: hidden;
+}
+
+/* =========================
+   ACTIVE STATE
+========================= */
+.sidebar-item.active {
+  background: rgba(165, 180, 252, 0.18);
+  color: var(--accent);
+}
+
+.sidebar-item.active .sidebar-icon {
+  color: var(--accent-hover);
+}
+
+/* =========================
+   COLLAPSED MODE
+========================= */
+.sidebar.collapsed .sidebar-item {
+  justify-content: center; /* icons centered */
+}
+
+.sidebar.collapsed .sidebar-text {
+  width: 0;       /* collapse width */
+  opacity: 0;     /* fade out */
+  margin: 0;      /* remove gap */
+}
+
+/* keep icon margin zero in collapsed */
+.sidebar.collapsed .sidebar-icon {
+  margin-right: 0;
+  margin-left: .9rem ;
+}
+
+/* =========================
+   HOVER EFFECT
+========================= */
+.sidebar-item:hover {
+  background-color: rgba(165, 180, 252, 0.1);
+}

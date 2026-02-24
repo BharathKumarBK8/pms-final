@@ -1,0 +1,12 @@
+[
+  {
+    "id": "1771825250295",
+    "displayName": "Bharath Kumar",
+    "email": "kumarbharath440@gmail.com",
+    "password": "$2b$10$p7k6m8tIraTeOmAvTVamLeu2T/MG2p4ubhHMGsQ9wp2WMcCFhcwr6",
+    "authProvider": "native",
+    "type": "user",
+    "role": "owner",
+    "createdAt": "2026-02-23T05:40:50.388Z"
+  }
+]

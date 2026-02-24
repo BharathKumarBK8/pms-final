@@ -130,7 +130,7 @@
 
 /* Active page */
 .p-paginator .p-paginator-pages .p-paginator-page.p-highlight {
-  background: rgb(0,148,255) !important;
+  background: var(--accent) !important;
   color: white !important;
   box-shadow: 0 2px 4px rgba(59, 130, 246, 0.3);
 }
