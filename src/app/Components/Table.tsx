@@ -36,21 +36,21 @@ export default function Table({
       {mode !== "view" && onEdit && (
         <Button
           icon="pi pi-pencil"
-          className="p-button-rounded p-button-success p-button-sm"
+          className="flex items-center justify-center w-8 h-8 bg-gray-900 text-green-400 rounded-full transition-all duration-200 hover:scale-110"
           onClick={() => onEdit(rowData)}
         />
       )}
       {onView && (
         <Button
           icon="pi pi-eye"
-          className="p-button-rounded p-button-info p-button-sm"
+          className="flex items-center justify-center w-8 h-8 bg-gray-900 text-blue-400 rounded-full transition-all duration-200 hover:scale-110"
           onClick={() => onView(rowData)}
         />
       )}
       {mode !== "view" && onDelete && (
         <Button
           icon="pi pi-trash"
-          className="p-button-rounded p-button-danger p-button-sm"
+          className="flex items-center justify-center w-8 h-8 bg-gray-900 text-red-400 rounded-full transition-all duration-200 hover:scale-110"
           onClick={() => onDelete(rowData)}
         />
       )}

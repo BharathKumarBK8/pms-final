@@ -13,20 +13,20 @@ import { RiBillLine } from "react-icons/ri";
 import "./Sidebar.css";
 
 const menuItems = [
-  { name: "Dashboard", icon: <FiHome size={20} />, href: "/" },
+  /* { name: "Dashboard", icon: <FiHome size={20} />, href: "/" }, */
   { name: "Patients", icon: <FiUsers size={20} />, href: "/patients" },
   {
     name: "Treatments",
     icon: <LiaToothSolid size={20} />,
     href: "/treatments",
   },
-  { name: "Invoices", icon: <RiBillLine size={20} />, href: "/invoices" },
+  /* { name: "Invoices", icon: <RiBillLine size={20} />, href: "/invoices" },
   {
     name: "Appointments",
     icon: <FiCalendar size={20} />,
     href: "/appointments",
   },
-  { name: "Settings", icon: <FiSettings size={20} />, href: "/settings" },
+  { name: "Settings", icon: <FiSettings size={20} />, href: "/settings" }, */
 ];
 
 interface SidebarProps {
@@ -36,7 +36,7 @@ interface SidebarProps {
 
 export default function Sidebar({ open, setOpen }: SidebarProps) {
   return (
-    <aside className="sidebar" style={{ width: open ? "256px" : "80px" }}>
+    <aside className="sidebar" style={{ width: open ? "256px" : "60px" }}>
       <button className="sidebar-toggle" onClick={() => setOpen(!open)}>
         <FiMenu size={22} />
       </button>

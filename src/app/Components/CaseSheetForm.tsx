@@ -5,6 +5,7 @@ import { Calendar } from "primereact/calendar";
 import { Button } from "primereact/button";
 import { useAppRouter } from "../context/RouterContext";
 import Table from "./Table";
+import MediaSection from "./MediaSection";
 
 interface CasesheetFormProps {
   patientId: string;
@@ -181,6 +182,17 @@ const CasesheetForm = forwardRef<CasesheetFormRef, CasesheetFormProps>(
             </div>
           </div>
         </div>
+
+        {casesheetId && mode !== "add" && (
+          <div className="form-card">
+            <h2 className="section-title">Casesheet Media</h2>
+            <MediaSection
+              patientId={patientId}
+              casesheetId={casesheetId}
+              title=""
+            />
+          </div>
+        )}
 
         {casesheetId && (
           <div className="form-card">

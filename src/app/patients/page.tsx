@@ -26,6 +26,11 @@ export default function PatientsPage() {
     navigateToPatientView(rowData.id);
   };
 
+  const handleDelete = (rowData: any) => {
+    // Implement delete functionality here
+    console.log("Delete patient with ID:", rowData.id);
+  };
+
   useEffect(() => {
     const fetchPatients = async () => {
       try {
@@ -60,6 +65,7 @@ export default function PatientsPage() {
         columns={columns}
         onEdit={handleEdit}
         onView={handleView}
+        onDelete={handleDelete}
       />
     </Layout>
   );

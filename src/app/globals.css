@@ -1,8 +1,10 @@
 @import "tailwindcss";
 
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  --background: #fff;
+  --foreground: #111;
+  --accent:  #a5b4fc;
+  --accent-hover: #818cf8;
 }
 
 @theme inline {
@@ -32,7 +34,6 @@ body {
   right: 0;
   bottom: 0;
   padding: 1.5rem;
-  background-color: #f9fafb;
   overflow: auto;
   padding-left: calc(256px + 1.5rem); /* sidebar width + padding */
   transition: padding-left 0.3s ease;
@@ -131,14 +132,9 @@ body {
   gap: 0.5rem;
 }
 
-.section-title::before {
-  content: "📋";
-  font-size: 1.25rem;
-}
-
 /* Modern Minimalist Button Classes */
 .btn-primary {
-  background: #000000;
+  background: #111;
   border: 1px solid #000000;
   border-radius: 6px;
   padding: 0.625rem 1.25rem;
@@ -150,8 +146,7 @@ body {
 }
 
 .btn-primary:hover {
-  background: #1a1a1a;
-  border-color: #1a1a1a;
+  transform: scale(1.1);
 }
 
 .btn-primary:active {

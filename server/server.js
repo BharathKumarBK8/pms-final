@@ -5,7 +5,7 @@ const path = require("path");
 const multer = require("multer");
 
 const app = express();
-const PORT = 5000;
+const PORT = 4000;
 
 app.use(cors());
 app.use(express.json());
@@ -66,7 +66,7 @@ app.get("/api/treatments", (req, res) => {
     treatments = treatments.filter((t) => t.patientId == req.query.patientId);
   if (req.query.casesheetId)
     treatments = treatments.filter(
-      (t) => t.casesheetId == req.query.casesheetId
+      (t) => t.casesheetId == req.query.casesheetId,
     );
   res.json(treatments);
 });
@@ -203,7 +203,7 @@ app.get("/api/media", (req, res) => {
     media = media.filter((m) => m.patientId === parseInt(req.query.patientId));
   if (req.query.treatmentId)
     media = media.filter(
-      (m) => m.treatmentId === parseInt(req.query.treatmentId)
+      (m) => m.treatmentId === parseInt(req.query.treatmentId),
     );
   res.json(media);
 });

@@ -45,8 +45,8 @@
 }
 
 .p-datatable-sm .p-datatable-thead > tr > th {
-  background-color: #f9fafb;
-  color: #333;
+  background-color: #111;
+  color: #fff;
   font-weight: 600;
   padding: 0.75rem 1rem;
   border-bottom: 2px solid #e0e0e0;
@@ -55,7 +55,7 @@
 .p-datatable-sm .p-datatable-tbody > tr > td {
   padding: 0.65rem 1rem;
   border-bottom: 1px solid #f1f1f1;
-  color: #555;
+  color: #111;
 }
 
 /* Hover effect for rows */
@@ -130,7 +130,7 @@
 
 /* Active page */
 .p-paginator .p-paginator-pages .p-paginator-page.p-highlight {
-  background: #3b82f6;
+  background: rgb(0,148,255) !important;
   color: white !important;
   box-shadow: 0 2px 4px rgba(59, 130, 246, 0.3);
 }
