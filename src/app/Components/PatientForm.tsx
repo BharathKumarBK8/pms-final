@@ -262,6 +262,7 @@ const PatientForm = forwardRef<PatientFormRef, PatientFormProps>(
               <h3>Casesheets</h3>
               {mode !== "view" && (
                 <Button
+                  className="btn-primary"
                   label="Add Casesheet"
                   icon="pi pi-plus"
                   onClick={handleAddCasesheet}

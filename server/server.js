@@ -259,4 +259,34 @@ app.delete("/api/media/:id", (req, res) => {
   res.json({ message: "Deleted" });
 });
 
+const billingsPath = path.join(__dirname, "data", "billings.json");
+const getBillings = () =>
+  fs.existsSync(billingsPath)
+    ? JSON.parse(fs.readFileSync(billingsPath, "utf-8"))
+    : [];
+
+app.get("/api/billings", (_, res) => {
+  res.json(getBillings());
+});
+
+const invoicesPath = path.join(__dirname, "data", "invoices.json");
+const getInvoices = () =>
+  fs.existsSync(invoicesPath)
+    ? JSON.parse(fs.readFileSync(invoicesPath, "utf-8"))
+    : [];
+
+app.get("/api/invoices", (_, res) => {
+  res.json(getInvoices());
+});
+
+const paymentsPath = path.join(__dirname, "data", "payments.json");
+const getPayments = () =>
+  fs.existsSync(paymentsPath)
+    ? JSON.parse(fs.readFileSync(paymentsPath, "utf-8"))
+    : [];
+
+app.get("/api/payments", (_, res) => {
+  res.json(getPayments());
+});
+
 app.listen(PORT, () => console.log(`Server: http://localhost:${PORT}`));

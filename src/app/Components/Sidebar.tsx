@@ -2,11 +2,20 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { FiUsers, FiCalendar, FiSettings, FiMenu } from "react-icons/fi";
+import {
+  FiUsers,
+  FiCalendar,
+  FiSettings,
+  FiMenu,
+  FiHome,
+  FiMonitor,
+} from "react-icons/fi";
 import { LiaToothSolid } from "react-icons/lia";
 import { RiBillLine } from "react-icons/ri";
 import { useAuth } from "../context/AuthContext";
 import "./Sidebar.css";
+import { BiRupee } from "react-icons/bi";
+import { FaFileInvoice } from "react-icons/fa";
 
 interface SidebarProps {
   open: boolean;
@@ -21,6 +30,12 @@ export default function Sidebar({ open, setOpen }: SidebarProps) {
 
   const menuItems = [
     {
+      name: "Dashboard",
+      icon: <FiHome size={20} />,
+      href: "/dashboard",
+      roles: ["owner", "admin", "doctor", "staff"],
+    },
+    {
       name: "Patients",
       icon: <FiUsers size={20} />,
       href: "/patients",
@@ -33,16 +48,22 @@ export default function Sidebar({ open, setOpen }: SidebarProps) {
       roles: ["owner", "admin", "doctor"],
     },
     {
-      name: "Invoices",
+      name: "Billings",
       icon: <RiBillLine size={20} />,
+      href: "/billings",
+      roles: ["owner", "admin"],
+    },
+    {
+      name: "Invoices",
+      icon: <FaFileInvoice size={20} />,
       href: "/invoices",
       roles: ["owner", "admin"],
     },
     {
-      name: "Appointments",
-      icon: <FiCalendar size={20} />,
-      href: "/appointments",
-      roles: ["owner", "admin", "doctor", "staff"],
+      name: "Payments",
+      icon: <BiRupee size={20} />,
+      href: "/payments",
+      roles: ["owner", "admin"],
     },
     {
       name: "Settings",

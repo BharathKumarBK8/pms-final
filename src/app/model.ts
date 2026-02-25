@@ -1,23 +1,8 @@
-// model.ts
-
 // --------------------
-// 1. Clinic
-// --------------------
-export interface Clinic {
-  id: string;
-  name: string;
-  location: string;
-  address?: string;
-  phoneNumber?: string;
-  status: "Active" | "Inactive";
-}
-
-// --------------------
-// 2. User (internal staff / doctor / admin)
+// 1. User
 // --------------------
 export interface User {
   id: string;
-  clinicIds: string[]; // primary clinic for the user
   role: "owner" | "admin" | "doctor" | "staff";
   email: string;
   displayName?: string;
@@ -25,11 +10,10 @@ export interface User {
 }
 
 // --------------------
-// 3. Patient
+// 2. Patient
 // --------------------
 export interface Patient {
   id: string;
-  primaryClinicId: string; // primary clinic for the patient
   name: string;
   dateOfBirth: Date;
   gender: "Male" | "Female" | "Other";
@@ -39,13 +23,12 @@ export interface Patient {
 }
 
 // --------------------
-// 4. Casesheet
+// 3. Casesheet
 // --------------------
 export interface Casesheet {
   id: string;
-  clinicId: string; // clinic where this case belongs
   patientId: string; // link to Patient
-  doctorId?: string; // optional doctor assignment
+  doctorId: string; // link to User
   date: Date;
   chiefComplaint: string;
   diagnosis: string;
@@ -54,16 +37,51 @@ export interface Casesheet {
 }
 
 // --------------------
-// 5. Treatment
+// 4. Treatment
 // --------------------
 export interface Treatment {
   id: string;
-  clinicId: string; // clinic where treatment occurs
-  casesheetId: string; // link to Casesheet
-  date: Date;
+  casesheetId?: string; // link to Casesheet
   treatmentName: string;
-  toothNumber?: string; // optional for dental
-  performedById: string; // doctor/staff performing
-  cost: number;
+  description?: string;
+  plannedDate?: Date;
+  performedDate?: Date;
   status: "Planned" | "In Progress" | "Completed" | "Cancelled";
+  performedById?: string; // link to User
+  cost: number;
+}
+
+export interface Billing {
+  id: string;
+  treatmentId: string; // link to Treatment
+  totalCost: number;
+  discountAmount?: number;
+  finalAmount: number;
+  status: "Unpaid" | "Partially Paid" | "Paid";
+}
+
+// --------------------
+// 6. Invoice
+// --------------------
+export interface Invoice {
+  id: string;
+  billingId: string; // link to Billing
+  totalAmount: number; // sum of completed treatments
+  discountAmount?: number;
+  finalAmount: number;
+  status: "Unpaid" | "Partially Paid" | "Paid";
+  createdAt: Date;
+}
+
+// --------------------
+// 7. Payment
+// --------------------
+export interface Payment {
+  id: string;
+  invoiceId: string; // link to Invoice
+  amount: number;
+  paymentMethod: "Cash" | "Card" | "UPI" | "Bank Transfer";
+  paidOn: Date;
+  receivedById: string; // link to User
+  notes?: string;
 }

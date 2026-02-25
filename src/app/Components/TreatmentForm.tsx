@@ -74,7 +74,7 @@ const TreatmentForm = forwardRef<TreatmentFormRef, TreatmentFormProps>(
       } catch (error) {
         console.error(
           `Error ${treatmentId ? "updating" : "adding"} treatment:`,
-          error
+          error,
         );
       }
     };
@@ -93,8 +93,8 @@ const TreatmentForm = forwardRef<TreatmentFormRef, TreatmentFormProps>(
             {mode === "add"
               ? "New Treatment"
               : mode === "edit"
-              ? "Edit Treatment"
-              : "Treatment Details"}
+                ? "Edit Treatment"
+                : "Treatment Details"}
           </h2>
           <div className="form-grid">
             <div className="form-field">
@@ -170,7 +170,7 @@ const TreatmentForm = forwardRef<TreatmentFormRef, TreatmentFormProps>(
         </div>
       </div>
     );
-  }
+  },
 );
 
 TreatmentForm.displayName = "TreatmentForm";

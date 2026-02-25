@@ -8,5 +8,15 @@
     "type": "user",
     "role": "owner",
     "createdAt": "2026-02-23T05:40:50.388Z"
+  },
+  {
+    "id": "1771954863577",
+    "displayName": "Jeeva Kanmani",
+    "email": "jeevakanmani04@gmail.com",
+    "password": "$2b$10$zqwmFqamXBN7C2MFtqWJ4Ow567HMM0cLECBL1O3rZ0V8UDg68r.7i",
+    "authProvider": "native",
+    "type": "user",
+    "role": "staff",
+    "createdAt": "2026-02-24T17:41:03.839Z"
   }
 ]

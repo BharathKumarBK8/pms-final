@@ -44,9 +44,10 @@ body {
 
 /* Enhanced Form Styles */
 .form-container {
-  max-width: 1200px;
-  margin: 0 auto;
+ /*  max-width: 1200px;
+  */ margin: 0 auto;
   padding: 1rem;
+  transition: all 0.3s ease;
 }
 
 .form-card {
@@ -168,7 +169,7 @@ body {
 
 .btn-secondary:hover {
   background: #f9fafb;
-  border-color: #9ca3af;
+  border-color: var(--accent-hover);
 }
 
 .btn-secondary:active {
