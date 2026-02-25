@@ -19,7 +19,7 @@ export interface Patient {
   gender: "Male" | "Female" | "Other";
   phoneNumber?: string;
   status: "Active" | "Inactive";
-  previousConditions?: string[];
+  previousConditions?: string;
 }
 
 // --------------------
@@ -28,12 +28,11 @@ export interface Patient {
 export interface Casesheet {
   id: string;
   patientId: string; // link to Patient
-  doctorId: string; // link to User
   date: Date;
   chiefComplaint: string;
-  diagnosis: string;
+  onDiagnosis: string;
   treatmentPlan: string;
-  status: "Open" | "Closed";
+  treatmentPending?: string;
 }
 
 // --------------------
@@ -41,16 +40,19 @@ export interface Casesheet {
 // --------------------
 export interface Treatment {
   id: string;
-  casesheetId?: string; // link to Casesheet
+  patientId: string; // link to Patient
+  casesheetId: string; // link to Casesheet
+  date?: Date;
   treatmentName: string;
-  description?: string;
-  plannedDate?: Date;
-  performedDate?: Date;
+  toothNumber?: string;
+  performedBy?: string;
   status: "Planned" | "In Progress" | "Completed" | "Cancelled";
-  performedById?: string; // link to User
   cost: number;
 }
 
+// --------------------
+// 5. Billing
+// --------------------
 export interface Billing {
   id: string;
   treatmentId: string; // link to Treatment
@@ -65,7 +67,7 @@ export interface Billing {
 // --------------------
 export interface Invoice {
   id: string;
-  billingId: string; // link to Billing
+  casesheetId: string; // link to Casesheet
   totalAmount: number; // sum of completed treatments
   discountAmount?: number;
   finalAmount: number;
@@ -79,9 +81,9 @@ export interface Invoice {
 export interface Payment {
   id: string;
   invoiceId: string; // link to Invoice
-  amount: number;
-  paymentMethod: "Cash" | "Card" | "UPI" | "Bank Transfer";
-  paidOn: Date;
-  receivedById: string; // link to User
-  notes?: string;
+  paymentDate: Date | null;
+  paymentMode: string;
+  paymentAmount: number;
+  remainingAmount?: number;
+  referenceNumber?: string;
 }
