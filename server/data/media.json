@@ -1,1 +1,11 @@
-[]
+[
+  {
+    "id": 1,
+    "filename": "1772023886093-work5.png",
+    "originalName": "work5.png",
+    "path": "/api/media/1772023886093-work5.png",
+    "patientId": 1,
+    "treatmentId": null,
+    "uploadedAt": "2026-02-25T12:51:26.113Z"
+  }
+]

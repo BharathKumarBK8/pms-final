@@ -259,34 +259,251 @@ app.delete("/api/media/:id", (req, res) => {
   res.json({ message: "Deleted" });
 });
 
+// ==================== BILLINGS ====================
 const billingsPath = path.join(__dirname, "data", "billings.json");
 const getBillings = () =>
   fs.existsSync(billingsPath)
     ? JSON.parse(fs.readFileSync(billingsPath, "utf-8"))
     : [];
+const saveBillings = (data) =>
+  fs.writeFileSync(billingsPath, JSON.stringify(data, null, 2));
 
-app.get("/api/billings", (_, res) => {
-  res.json(getBillings());
+app.get("/api/billings", (req, res) => {
+  let billings = getBillings();
+
+  // Filter by invoiceId
+  if (req.query.invoiceId) {
+    if (req.query.invoiceId === "null") {
+      billings = billings.filter((b) => !b.invoiceId);
+    } else {
+      billings = billings.filter((b) => b.invoiceId == req.query.invoiceId);
+    }
+  }
+
+  // Filter by patientId (need to check associated treatment)
+  if (req.query.patientId) {
+    const treatments = getTreatments();
+    const patientTreatmentIds = treatments
+      .filter((t) => t.patientId == req.query.patientId)
+      .map((t) => t.id);
+    billings = billings.filter((b) =>
+      patientTreatmentIds.includes(b.treatmentId),
+    );
+  }
+
+  res.json(billings);
 });
 
+app.get("/api/billings/:id", (req, res) => {
+  const billings = getBillings();
+  const billing = billings.find((b) => b.id == req.params.id);
+  if (!billing) return res.status(404).json({ error: "Billing not found" });
+  res.json(billing);
+});
+
+app.post("/api/billings", (req, res) => {
+  const billings = getBillings();
+  const newBilling = {
+    id: billings.length > 0 ? Math.max(...billings.map((b) => b.id)) + 1 : 1,
+    treatmentId: parseInt(req.body.treatmentId),
+    invoiceId: req.body.invoiceId ? parseInt(req.body.invoiceId) : undefined,
+    totalCost: parseFloat(req.body.totalCost),
+    discountAmount: parseFloat(req.body.discountAmount || 0),
+    finalAmount: parseFloat(req.body.finalAmount),
+    status: req.body.status || "Unpaid",
+  };
+  billings.push(newBilling);
+  saveBillings(billings);
+  res.status(201).json(newBilling);
+});
+
+app.put("/api/billings/:id", (req, res) => {
+  const billings = getBillings();
+  const index = billings.findIndex((b) => b.id == req.params.id);
+  if (index === -1) return res.status(404).json({ error: "Billing not found" });
+
+  billings[index] = {
+    ...billings[index],
+    treatmentId: req.body.treatmentId
+      ? parseInt(req.body.treatmentId)
+      : billings[index].treatmentId,
+    invoiceId: req.body.invoiceId
+      ? parseInt(req.body.invoiceId)
+      : billings[index].invoiceId,
+    totalCost: req.body.totalCost
+      ? parseFloat(req.body.totalCost)
+      : billings[index].totalCost,
+    discountAmount:
+      req.body.discountAmount !== undefined
+        ? parseFloat(req.body.discountAmount)
+        : billings[index].discountAmount,
+    finalAmount: req.body.finalAmount
+      ? parseFloat(req.body.finalAmount)
+      : billings[index].finalAmount,
+    status: req.body.status || billings[index].status,
+  };
+  saveBillings(billings);
+  res.json(billings[index]);
+});
+
+app.delete("/api/billings/:id", (req, res) => {
+  const billings = getBillings();
+  const index = billings.findIndex((b) => b.id == req.params.id);
+  if (index === -1) return res.status(404).json({ error: "Billing not found" });
+  billings.splice(index, 1);
+  saveBillings(billings);
+  res.json({ message: "Billing deleted" });
+});
+
+// ==================== INVOICES ====================
 const invoicesPath = path.join(__dirname, "data", "invoices.json");
 const getInvoices = () =>
   fs.existsSync(invoicesPath)
     ? JSON.parse(fs.readFileSync(invoicesPath, "utf-8"))
     : [];
+const saveInvoices = (data) =>
+  fs.writeFileSync(invoicesPath, JSON.stringify(data, null, 2));
 
-app.get("/api/invoices", (_, res) => {
-  res.json(getInvoices());
+app.get("/api/invoices", (req, res) => {
+  let invoices = getInvoices();
+
+  if (req.query.patientId) {
+    invoices = invoices.filter((i) => i.patientId == req.query.patientId);
+  }
+
+  res.json(invoices);
 });
 
+app.get("/api/invoices/:id", (req, res) => {
+  const invoices = getInvoices();
+  const invoice = invoices.find((i) => i.id == req.params.id);
+  if (!invoice) return res.status(404).json({ error: "Invoice not found" });
+  res.json(invoice);
+});
+
+app.post("/api/invoices", (req, res) => {
+  const invoices = getInvoices();
+  const newInvoice = {
+    id: invoices.length > 0 ? Math.max(...invoices.map((i) => i.id)) + 1 : 1,
+    patientId: parseInt(req.body.patientId),
+    totalAmount: parseFloat(req.body.totalAmount),
+    discountAmount: parseFloat(req.body.discountAmount || 0),
+    finalAmount: parseFloat(req.body.finalAmount),
+    status: req.body.status || "Unpaid",
+    createdAt: new Date().toISOString(),
+  };
+  invoices.push(newInvoice);
+  saveInvoices(invoices);
+  res.status(201).json(newInvoice);
+});
+
+app.put("/api/invoices/:id", (req, res) => {
+  const invoices = getInvoices();
+  const index = invoices.findIndex((i) => i.id == req.params.id);
+  if (index === -1) return res.status(404).json({ error: "Invoice not found" });
+
+  invoices[index] = {
+    ...invoices[index],
+    patientId: req.body.patientId
+      ? parseInt(req.body.patientId)
+      : invoices[index].patientId,
+    totalAmount: req.body.totalAmount
+      ? parseFloat(req.body.totalAmount)
+      : invoices[index].totalAmount,
+    discountAmount:
+      req.body.discountAmount !== undefined
+        ? parseFloat(req.body.discountAmount)
+        : invoices[index].discountAmount,
+    finalAmount: req.body.finalAmount
+      ? parseFloat(req.body.finalAmount)
+      : invoices[index].finalAmount,
+    status: req.body.status || invoices[index].status,
+  };
+  saveInvoices(invoices);
+  res.json(invoices[index]);
+});
+
+app.delete("/api/invoices/:id", (req, res) => {
+  const invoices = getInvoices();
+  const index = invoices.findIndex((i) => i.id == req.params.id);
+  if (index === -1) return res.status(404).json({ error: "Invoice not found" });
+  invoices.splice(index, 1);
+  saveInvoices(invoices);
+  res.json({ message: "Invoice deleted" });
+});
+
+// ==================== PAYMENTS ====================
 const paymentsPath = path.join(__dirname, "data", "payments.json");
 const getPayments = () =>
   fs.existsSync(paymentsPath)
     ? JSON.parse(fs.readFileSync(paymentsPath, "utf-8"))
     : [];
+const savePayments = (data) =>
+  fs.writeFileSync(paymentsPath, JSON.stringify(data, null, 2));
 
-app.get("/api/payments", (_, res) => {
-  res.json(getPayments());
+app.get("/api/payments", (req, res) => {
+  let payments = getPayments();
+
+  if (req.query.invoiceId) {
+    payments = payments.filter((p) => p.invoiceId == req.query.invoiceId);
+  }
+
+  res.json(payments);
+});
+
+app.get("/api/payments/:id", (req, res) => {
+  const payments = getPayments();
+  const payment = payments.find((p) => p.id == req.params.id);
+  if (!payment) return res.status(404).json({ error: "Payment not found" });
+  res.json(payment);
+});
+
+app.post("/api/payments", (req, res) => {
+  const payments = getPayments();
+  const newPayment = {
+    id: payments.length > 0 ? Math.max(...payments.map((p) => p.id)) + 1 : 1,
+    invoiceId: parseInt(req.body.invoiceId),
+    amount: parseFloat(req.body.amount),
+    paymentMethod: req.body.paymentMethod || "Cash",
+    paidOn: req.body.paidOn || new Date().toISOString(),
+    receivedById: req.body.receivedById,
+    notes: req.body.notes || "",
+  };
+  payments.push(newPayment);
+  savePayments(payments);
+  res.status(201).json(newPayment);
+});
+
+app.put("/api/payments/:id", (req, res) => {
+  const payments = getPayments();
+  const index = payments.findIndex((p) => p.id == req.params.id);
+  if (index === -1) return res.status(404).json({ error: "Payment not found" });
+
+  payments[index] = {
+    ...payments[index],
+    invoiceId: req.body.invoiceId
+      ? parseInt(req.body.invoiceId)
+      : payments[index].invoiceId,
+    amount: req.body.amount
+      ? parseFloat(req.body.amount)
+      : payments[index].amount,
+    paymentMethod: req.body.paymentMethod || payments[index].paymentMethod,
+    paidOn: req.body.paidOn || payments[index].paidOn,
+    receivedById: req.body.receivedById || payments[index].receivedById,
+    notes:
+      req.body.notes !== undefined ? req.body.notes : payments[index].notes,
+  };
+  savePayments(payments);
+  res.json(payments[index]);
+});
+
+app.delete("/api/payments/:id", (req, res) => {
+  const payments = getPayments();
+  const index = payments.findIndex((p) => p.id == req.params.id);
+  if (index === -1) return res.status(404).json({ error: "Payment not found" });
+  payments.splice(index, 1);
+  savePayments(payments);
+  res.json({ message: "Payment deleted" });
 });
 
 app.listen(PORT, () => console.log(`Server: http://localhost:${PORT}`));

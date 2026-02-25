@@ -1,22 +1,20 @@
 "use client";
-import CasesheetForm, {
-  CasesheetFormRef,
-} from "@/app/Components/CaseSheetForm";
+import BillingForm, { BillingFormRef } from "@/app/Components/BillingForm";
 import Layout from "@/app/Components/Layout";
-import { useParams, useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { useRef } from "react";
 import { Button } from "primereact/button";
 
-export default function AddCasesheetPage() {
-  const params = useParams();
+export default function AddBillingPage() {
   const router = useRouter();
-  const formRef = useRef<CasesheetFormRef>(null);
-  const patientId = params.patientId as string;
+  const searchParams = useSearchParams();
+  const treatmentId = searchParams.get("treatmentId") || "";
+  const formRef = useRef<BillingFormRef>(null);
 
   return (
     <Layout>
       <div className="flex justify-between items-center mb-4">
-        <h1 className="text-2xl font-bold">Add Casesheet</h1>
+        <h1 className="text-2xl font-bold">Add Billing</h1>
         <div className="flex gap-2">
           <Button
             label="Save"
@@ -33,10 +31,10 @@ export default function AddCasesheetPage() {
           />
         </div>
       </div>
-      <CasesheetForm
+      <BillingForm
         ref={formRef}
-        patientId={patientId}
         mode="add"
+        treatmentId={treatmentId}
         onSave={() => router.back()}
         onCancel={() => router.back()}
       />

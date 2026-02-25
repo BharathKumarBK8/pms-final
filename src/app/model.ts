@@ -41,23 +41,25 @@ export interface Casesheet {
 // --------------------
 export interface Treatment {
   id: string;
-  casesheetId?: string; // link to Casesheet
+  casesheetId?: string; // optional - consultations can be standalone
   treatmentName: string;
   description?: string;
-  plannedDate?: Date;
   performedDate?: Date;
-  status: "Planned" | "In Progress" | "Completed" | "Cancelled";
+  status: "Planned" | "Completed" | "Cancelled";
   performedById?: string; // link to User
   cost: number;
 }
 
+// --------------------
+// 5. Billing
+// --------------------
 export interface Billing {
   id: string;
-  treatmentId: string; // link to Treatment
+  treatmentId: string; // 1:1 per treatment
+  invoiceId?: string; // optional until grouped into invoice
   totalCost: number;
-  discountAmount?: number;
+  discountAmount?: number | 0;
   finalAmount: number;
-  status: "Unpaid" | "Partially Paid" | "Paid";
 }
 
 // --------------------
@@ -65,8 +67,9 @@ export interface Billing {
 // --------------------
 export interface Invoice {
   id: string;
-  billingId: string; // link to Billing
-  totalAmount: number; // sum of completed treatments
+  patientId: string;
+  casesheetId?: string; // optional - for organization
+  totalAmount: number; // sum of linked billings
   discountAmount?: number;
   finalAmount: number;
   status: "Unpaid" | "Partially Paid" | "Paid";

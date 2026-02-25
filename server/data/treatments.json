@@ -3,22 +3,11 @@
     "id": 1,
     "patientId": 1,
     "casesheetId": 1,
-    "date": "2026-01-04T03:43:33.700Z",
-    "treatmentName": "Tooth Extraction ",
+    "date": "2026-02-25T12:51:30.977Z",
+    "treatmentName": "Extraction",
     "toothNumber": "31",
-    "performedBy": "Dr. Johnson",
-    "cost": 3500,
-    "status": "Completed"
-  },
-  {
-    "id": 2,
-    "patientId": 1,
-    "casesheetId": 2,
-    "date": "2026-01-04T03:45:42.029Z",
-    "treatmentName": "Ortho",
-    "toothNumber": "All",
-    "performedBy": "Dr. Lee",
-    "cost": 30000,
+    "performedBy": "Dr. Smith",
+    "cost": 2500,
     "status": "Completed"
   }
 ]

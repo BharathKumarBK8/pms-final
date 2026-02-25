@@ -3,7 +3,6 @@ import { useState, useEffect, forwardRef, useImperativeHandle } from "react";
 import { InputText } from "primereact/inputtext";
 import { InputTextarea } from "primereact/inputtextarea";
 import { Dropdown } from "primereact/dropdown";
-import { Calendar } from "primereact/calendar";
 import { Button } from "primereact/button";
 import { useAppRouter } from "../context/RouterContext";
 import Table from "./Table";
@@ -20,20 +19,19 @@ export interface PatientFormRef {
 }
 
 const PatientForm = forwardRef<PatientFormRef, PatientFormProps>(
-  ({ patientId, mode, onSave }, ref) => {
+  ({ patientId, mode, onSave, onCancel }, ref) => {
     const {
       navigateToCasesheetEdit,
       navigateToCasesheetView,
       navigateToCasesheetAdd,
     } = useAppRouter();
 
-    // ✅ Form state (No age stored)
     const [formData, setFormData] = useState({
       name: "",
-      dateOfBirth: null as Date | null,
+      age: "",
       gender: "",
-      phoneNumber: "",
-      previousConditions: "",
+      phone: "",
+      medicalConditions: "",
       status: "Active",
     });
 
@@ -57,31 +55,6 @@ const PatientForm = forwardRef<PatientFormRef, PatientFormProps>(
       { field: "onDiagnosis", header: "On Diagnosis", sortable: true },
     ];
 
-    // ✅ Calculate age dynamically from DOB
-    const calculateAge = (dob: Date) => {
-      const today = new Date();
-      let age = today.getFullYear() - dob.getFullYear();
-      const monthDiff = today.getMonth() - dob.getMonth();
-      if (
-        monthDiff < 0 ||
-        (monthDiff === 0 && today.getDate() < dob.getDate())
-      ) {
-        age--;
-      }
-      return age;
-    };
-
-    const age = formData.dateOfBirth ? calculateAge(formData.dateOfBirth) : "";
-
-    // ✅ Format DOB as YYYY-MM-DD for backend
-    const formatLocalDate = (date: Date) => {
-      const year = date.getFullYear();
-      const month = String(date.getMonth() + 1).padStart(2, "0");
-      const day = String(date.getDate()).padStart(2, "0");
-      return `${year}-${month}-${day}`;
-    };
-
-    // ✅ Fetch patient + casesheets
     useEffect(() => {
       if (!patientId) return;
 
@@ -96,14 +69,7 @@ const PatientForm = forwardRef<PatientFormRef, PatientFormProps>(
 
           const patientData = await patientRes.json();
           const casesheetsData = await casesheetsRes.json();
-
-          setFormData({
-            ...patientData,
-            dateOfBirth: patientData.dateOfBirth
-              ? new Date(patientData.dateOfBirth)
-              : null,
-          });
-
+          setFormData(patientData);
           setCasesheets(casesheetsData);
         } catch (error) {
           console.error("Error fetching patient data:", error);
@@ -113,34 +79,28 @@ const PatientForm = forwardRef<PatientFormRef, PatientFormProps>(
       fetchPatientAndCasesheets();
     }, [patientId]);
 
-    // ✅ Submit handler (no age sent)
     const handleSubmit = async () => {
       try {
         const url = patientId
           ? `http://localhost:5000/api/patients/${patientId}`
           : "http://localhost:5000/api/patients";
-        const method = patientId ? "PUT" : "POST";
 
-        const payload = {
-          name: formData.name,
-          dateOfBirth: formData.dateOfBirth
-            ? formatLocalDate(formData.dateOfBirth)
-            : null,
-          gender: formData.gender,
-          phoneNumber: formData.phoneNumber,
-          previousConditions: formData.previousConditions,
-          status: formData.status,
-        };
+        const method = patientId ? "PUT" : "POST";
 
         const response = await fetch(url, {
           method,
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(payload),
+          body: JSON.stringify(formData),
         });
 
-        if (response.ok && onSave) onSave();
+        if (response.ok && onSave) {
+          onSave();
+        }
       } catch (error) {
-        console.error("Error saving patient:", error);
+        console.error(
+          `Error ${patientId ? "updating" : "adding"} patient:`,
+          error,
+        );
       }
     };
 
@@ -167,12 +127,11 @@ const PatientForm = forwardRef<PatientFormRef, PatientFormProps>(
       <div className="form-container">
         <div className="form-card">
           <div className="form-grid">
-            {/* Name */}
             <div className="form-field">
-              <label>Name</label>
+              <label className="form-label">Name</label>
               <InputText
-                value={formData.name}
                 disabled={isReadOnly}
+                value={formData.name}
                 onChange={(e) =>
                   setFormData({ ...formData, name: e.target.value })
                 }
@@ -180,96 +139,81 @@ const PatientForm = forwardRef<PatientFormRef, PatientFormProps>(
               />
             </div>
 
-            {/* DOB */}
             <div className="form-field">
-              <label>Date of Birth</label>
-              <Calendar
-                value={formData.dateOfBirth}
-                onChange={(e) =>
-                  setFormData({ ...formData, dateOfBirth: e.value as Date })
-                }
-                showIcon
-                dateFormat="dd/mm/yy"
-                maxDate={new Date()}
+              <label className="form-label">Age</label>
+              <InputText
                 disabled={isReadOnly}
+                type="number"
+                value={formData.age}
+                onChange={(e) =>
+                  setFormData({ ...formData, age: e.target.value })
+                }
                 required
               />
             </div>
 
-            {/* Age (derived) */}
             <div className="form-field">
-              <label>Age</label>
-              <InputText value={age.toString()} disabled />
-            </div>
-
-            {/* Gender */}
-            <div className="form-field">
-              <label>Gender</label>
+              <label className="form-label">Gender</label>
               <Dropdown
                 value={formData.gender}
                 options={genderOptions}
-                disabled={isReadOnly}
                 onChange={(e) => setFormData({ ...formData, gender: e.value })}
+                disabled={isReadOnly}
                 required
               />
             </div>
 
-            {/* Phone */}
             <div className="form-field">
-              <label>Phone</label>
+              <label className="form-label">Phone</label>
               <InputText
-                value={formData.phoneNumber}
-                disabled={isReadOnly}
+                value={formData.phone}
                 onChange={(e) =>
-                  setFormData({ ...formData, phoneNumber: e.target.value })
+                  setFormData({ ...formData, phone: e.target.value })
                 }
                 required
+                disabled={isReadOnly}
               />
             </div>
 
-            {/* Previous Conditions */}
             <div className="form-field">
-              <label>Previous Medical Conditions</label>
+              <label className="form-label">Previous Medical Conditions</label>
               <InputTextarea
-                value={formData.previousConditions || ""}
-                disabled={isReadOnly}
+                value={formData["medicalConditions"] || ""}
                 onChange={(e) =>
                   setFormData({
                     ...formData,
-                    previousConditions: e.target.value,
+                    medicalConditions: e.target.value,
                   })
                 }
+                disabled={isReadOnly}
               />
             </div>
 
-            {/* Status */}
             <div className="form-field">
-              <label>Status</label>
+              <label className="form-label">Status</label>
               <Dropdown
                 value={formData.status}
                 options={statusOptions}
-                disabled={isReadOnly}
                 onChange={(e) => setFormData({ ...formData, status: e.value })}
+                disabled={isReadOnly}
               />
             </div>
           </div>
         </div>
 
-        {/* Casesheets Section */}
         {patientId && (
           <div className="form-card">
             <div className="section-header">
-              <h3>Casesheets</h3>
+              <h3 className="section-title">Casesheets</h3>
               {mode !== "view" && (
                 <Button
-                  className="btn-primary"
                   label="Add Casesheet"
+                  className="btn-primary"
                   icon="pi pi-plus"
                   onClick={handleAddCasesheet}
                 />
               )}
             </div>
-
             <Table
               title={`Patient ID: ${patientId}`}
               data={casesheets}
@@ -286,4 +230,5 @@ const PatientForm = forwardRef<PatientFormRef, PatientFormProps>(
 );
 
 PatientForm.displayName = "PatientForm";
+
 export default PatientForm;

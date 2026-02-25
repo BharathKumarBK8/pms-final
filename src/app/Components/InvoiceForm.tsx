@@ -4,10 +4,12 @@ import { InputText } from "primereact/inputtext";
 import { InputNumber } from "primereact/inputnumber";
 import { Dropdown } from "primereact/dropdown";
 import { Button } from "primereact/button";
+import { useAppRouter } from "../context/RouterContext";
+import Table from "./Table";
 
 interface InvoiceFormProps {
   invoiceId?: string;
-  casesheetId: string;
+  billingId: string;
   mode: "view" | "edit" | "add";
   onSave?: () => void;
   onCancel?: () => void;
@@ -18,10 +20,11 @@ export interface InvoiceFormRef {
 }
 
 const InvoiceForm = forwardRef<InvoiceFormRef, InvoiceFormProps>(
-  ({ invoiceId, casesheetId, mode, onSave, onCancel }, ref) => {
+  ({ invoiceId, billingId, mode, onSave, onCancel }, ref) => {
+    const { navigateToAddPayment } = useAppRouter();
     const [formData, setFormData] = useState({
       invoiceId: invoiceId || "",
-      casesheetId,
+      billingId,
       totalAmount: 0,
       discountAmount: 0,
       finalAmount: 0,
@@ -33,6 +36,15 @@ const InvoiceForm = forwardRef<InvoiceFormRef, InvoiceFormProps>(
       { label: "Unpaid", value: "Unpaid" },
       { label: "Partially Paid", value: "Partially Paid" },
       { label: "Paid", value: "Paid" },
+    ];
+
+    const [payments, setPayments] = useState<any[]>([]); // Replace 'any' with your Payment type if available
+
+    const paymentColumns = [
+      { field: "id", header: "Payment ID", sortable: true },
+      { field: "paymentDate", header: "Payment Date", sortable: true },
+      { field: "paymentMode", header: "Payment Mode", sortable: true },
+      { field: "paymentAmount", header: "Payment Amount", sortable: true },
     ];
 
     const isReadOnly = mode === "view";
@@ -144,6 +156,27 @@ const InvoiceForm = forwardRef<InvoiceFormRef, InvoiceFormProps>(
             </div>
           )}
         </div>
+        {invoiceId && (
+          <div className="form-card">
+            <div className="section-header">
+              <h3 className="section-title">Payments</h3>
+              {mode !== "view" && (
+                <Button
+                  label="Add Payment"
+                  className="btn-primary"
+                  icon="pi pi-plus"
+                  onClick={() => navigateToAddPayment(invoiceId)}
+                />
+              )}
+            </div>
+            <Table
+              title={`Payments for Invoice ${invoiceId}`}
+              data={payments}
+              columns={paymentColumns}
+              mode={mode}
+            />
+          </div>
+        )}
       </div>
     );
   },

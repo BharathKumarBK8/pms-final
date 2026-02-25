@@ -1,10 +1,10 @@
 [
   {
     "id": 1,
-    "name": "A.S.Bharath Kumar",
+    "name": "A.S.Bharath Kumar ",
     "age": "24",
     "gender": "Male",
-    "phone": "+91 99940 38356",
+    "phone": "+91 9994038356",
     "medicalConditions": "None",
     "status": "Active"
   }

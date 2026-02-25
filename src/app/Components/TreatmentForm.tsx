@@ -3,6 +3,9 @@ import { useState, useEffect, forwardRef, useImperativeHandle } from "react";
 import { InputText } from "primereact/inputtext";
 import { Dropdown } from "primereact/dropdown";
 import { Calendar } from "primereact/calendar";
+import { Button } from "primereact/button";
+import { useAppRouter } from "../context/RouterContext";
+import Table from "./Table";
 
 interface TreatmentFormProps {
   patientId: string;
@@ -19,6 +22,7 @@ export interface TreatmentFormRef {
 
 const TreatmentForm = forwardRef<TreatmentFormRef, TreatmentFormProps>(
   ({ patientId, casesheetId, treatmentId, mode, onSave, onCancel }, ref) => {
+    const { navigateToAddBilling } = useAppRouter();
     const [formData, setFormData] = useState({
       patientId: patientId,
       casesheetId: casesheetId,
@@ -42,17 +46,38 @@ const TreatmentForm = forwardRef<TreatmentFormRef, TreatmentFormProps>(
       { label: "Dr. Johnson", value: "Dr. Johnson" },
       { label: "Dr. Lee", value: "Dr. Lee" },
     ];
+    const [billings, setBillings] = useState<any[]>([]);
 
+    const billingsColumns = [
+      { field: "id", header: "Billing ID", sortable: true },
+      { field: "totalCost", header: "Total Cost", sortable: true },
+      { field: "discountAmount", header: "Discount Amount", sortable: true },
+      { field: "finalAmount", header: "Final Amount", sortable: true },
+    ];
     const isReadOnly = mode === "view";
 
     useEffect(() => {
-      if (treatmentId) {
-        fetch(`http://localhost:5000/api/treatments/${treatmentId}`)
-          .then((res) => res.json())
-          .then((data) => setFormData({ ...data, date: new Date(data.date) }))
-          .catch((err) => console.error("Error fetching treatment:", err));
-      }
-    }, [treatmentId]);
+      if (!treatmentId) return;
+
+      const fetchData = async () => {
+        try {
+          const [treatmentRes, billingsRes] = await Promise.all([
+            fetch(`http://localhost:5000/api/treatments/${treatmentId}`),
+            fetch(
+              `http://localhost:5000/api/billings?treatmentId=${treatmentId}`,
+            ),
+          ]);
+          const treatmentData = await treatmentRes.json();
+          const billingsData = await billingsRes.json();
+          setFormData({ ...treatmentData, date: new Date(treatmentData.date) });
+          setBillings(billingsData);
+        } catch (error) {
+          console.error("Error fetching treatment or billings:", error);
+        }
+      };
+
+      fetchData();
+    }, [treatmentId, casesheetId]);
 
     const handleSubmit = async () => {
       try {
@@ -168,6 +193,27 @@ const TreatmentForm = forwardRef<TreatmentFormRef, TreatmentFormProps>(
             </div>
           </div>
         </div>
+        {treatmentId && (
+          <div className="form-card">
+            <div className="section-header">
+              <h3 className="section-title">Billings</h3>
+              {mode !== "view" && (
+                <Button
+                  label="Add Billing"
+                  className="btn-primary"
+                  icon="pi pi-plus"
+                  onClick={() => navigateToAddBilling(treatmentId)}
+                />
+              )}
+            </div>
+            <Table
+              title={`Billings for Treatment ${treatmentId}`}
+              data={billings}
+              columns={billingsColumns}
+              mode={mode}
+            />
+          </div>
+        )}
       </div>
     );
   },

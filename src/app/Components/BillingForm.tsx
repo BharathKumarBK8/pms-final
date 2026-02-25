@@ -3,9 +3,10 @@
 import { useState, useEffect, forwardRef, useImperativeHandle } from "react";
 import { InputNumber } from "primereact/inputnumber";
 import { InputText } from "primereact/inputtext";
-import { Dropdown } from "primereact/dropdown";
 import { Button } from "primereact/button";
+import { useAppRouter } from "../context/RouterContext";
 import { Billing } from "../model"; // assuming you have a Billing model
+import Table from "./Table";
 
 interface BillingFormProps {
   treatmentId: string;
@@ -21,37 +22,47 @@ export interface BillingFormRef {
 
 const BillingForm = forwardRef<BillingFormRef, BillingFormProps>(
   ({ treatmentId, billingId, mode, onSave, onCancel }, ref) => {
+    const { navigateToAddInvoice } = useAppRouter();
     const [formData, setFormData] = useState<Billing>({
       id: billingId || "",
       treatmentId,
       totalCost: 0,
       discountAmount: 0, // Ensure discountAmount starts as 0 if undefined
       finalAmount: 0,
-      status: "Unpaid",
     });
 
-    const statusOptions = [
-      { label: "Unpaid", value: "Unpaid" },
-      { label: "Partially Paid", value: "Partially Paid" },
-      { label: "Paid", value: "Paid" },
-    ];
-
+    const [invoices, setInvoices] = useState<any>(null); // Replace 'any' with your Invoice type if available
     const isReadOnly = mode === "view";
 
+    const invoiceColumns = [
+      { field: "id", header: "Invoice ID", sortable: true },
+      { field: "totalAmount", header: "Total Amount", sortable: true },
+      { field: "discountAmount", header: "Discount Amount", sortable: true },
+      { field: "finalAmount", header: "Final Amount", sortable: true },
+    ];
+
     useEffect(() => {
-      if (billingId) {
-        // Fetch billing data if we're in edit mode
-        fetch(`http://localhost:5000/api/billings/${billingId}`)
-          .then((res) => res.json())
-          .then((data) =>
-            setFormData({
-              ...data,
-              discountAmount: data.discountAmount || 0, // Ensure default value is set
-            }),
-          )
-          .catch((err) => console.error("Error fetching billing:", err));
-      }
-    }, [billingId]);
+      if (!billingId) return;
+      const fetchData = async () => {
+        try {
+          const [billingRes, invoicesRes] = await Promise.all([
+            fetch(`http://localhost:5000/api/billings/${billingId}`),
+            fetch(`http://localhost:5000/api/invoices?billingId=${billingId}`),
+          ]);
+          const billingData = await billingRes.json();
+          const invoicesData = await invoicesRes.json();
+          setFormData({
+            ...billingData,
+            discountAmount: billingData.discountAmount || 0,
+          });
+          setInvoices(invoicesData);
+        } catch (error) {
+          console.error("Error fetching billing or invoices:", error);
+        }
+      };
+
+      fetchData();
+    }, [billingId, treatmentId]);
 
     const handleSubmit = async () => {
       try {
@@ -81,7 +92,7 @@ const BillingForm = forwardRef<BillingFormRef, BillingFormProps>(
       const { totalCost, discountAmount } = formData;
       setFormData({
         ...formData,
-        finalAmount: totalCost - discountAmount,
+        finalAmount: discountAmount ? totalCost - discountAmount : totalCost,
       });
     };
 
@@ -122,7 +133,7 @@ const BillingForm = forwardRef<BillingFormRef, BillingFormProps>(
                 onBlur={calculateFinalAmount}
                 disabled={isReadOnly}
                 mode="currency"
-                currency="USD"
+                currency="INR"
                 showButtons
               />
             </div>
@@ -137,7 +148,7 @@ const BillingForm = forwardRef<BillingFormRef, BillingFormProps>(
                 onBlur={calculateFinalAmount}
                 disabled={isReadOnly}
                 mode="currency"
-                currency="USD"
+                currency="INR"
                 showButtons
               />
             </div>
@@ -148,18 +159,8 @@ const BillingForm = forwardRef<BillingFormRef, BillingFormProps>(
                 value={formData.finalAmount}
                 disabled
                 mode="currency"
-                currency="USD"
+                currency="INR"
                 className="p-disabled"
-              />
-            </div>
-
-            <div className="form-field">
-              <label className="form-label">Status</label>
-              <Dropdown
-                value={formData.status}
-                options={statusOptions}
-                onChange={(e) => setFormData({ ...formData, status: e.value })}
-                disabled={isReadOnly}
               />
             </div>
           </div>
@@ -182,6 +183,28 @@ const BillingForm = forwardRef<BillingFormRef, BillingFormProps>(
             )}
           </div>
         </div>
+
+        {billingId && (
+          <div className="form-card">
+            <div className="section-header">
+              <h3 className="section-title">Invoices</h3>
+              {mode !== "view" && (
+                <Button
+                  label="Add Invoice"
+                  className="btn-primary"
+                  icon="pi pi-plus"
+                  onClick={() => navigateToAddInvoice(billingId)}
+                />
+              )}
+            </div>
+            <Table
+              title={`Invoices for Billing ${billingId}`}
+              data={invoices}
+              columns={invoiceColumns}
+              mode={mode}
+            />
+          </div>
+        )}
       </div>
     );
   },

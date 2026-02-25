@@ -12,18 +12,21 @@ interface RouterContextType {
   navigateToCasesheetView: (patientId: string, casesheetId: string) => void;
   navigateToAddTreatmentviaCasesheet: (
     patientId: string,
-    casesheetId: string
+    casesheetId: string,
   ) => void;
   navigateToEditTreatmentviaCasesheet: (
     patientId: string,
     casesheetId: string,
-    treatmentId: string
+    treatmentId: string,
   ) => void;
   navigateToViewTreatmentviaCasesheet: (
     patientId: string,
     casesheetId: string,
-    treatmentId: string
+    treatmentId: string,
   ) => void;
+  navigateToAddBilling: (treatmentId: string) => void;
+  navigateToAddInvoice: (billingId: string) => void;
+  navigateToAddPayment: (invoiceId: string) => void;
 }
 
 const RouterContext = createContext<RouterContextType | undefined>(undefined);
@@ -40,34 +43,40 @@ export const RouterProvider: React.FC<{ children: React.ReactNode }> = ({
   const navigateToPatientView = (patientId: string) =>
     router.push(`/patients/${patientId}`);
   const navigateToCasesheetAdd = (patientId: string) =>
-    router.push(`/patients/${patientId}/casesheets/add`);
+    router.push(`/casesheets/add?patientId=${patientId}`);
   const navigateToCasesheetEdit = (patientId: string, casesheetId: string) =>
-    router.push(`/patients/${patientId}/casesheets/${casesheetId}/edit`);
+    router.push(`/casesheets/${casesheetId}/edit?patientId=${patientId}`);
   const navigateToCasesheetView = (patientId: string, casesheetId: string) =>
-    router.push(`/patients/${patientId}/casesheets/${casesheetId}`);
+    router.push(`/casesheets/${casesheetId}?patientId=${patientId}`);
   const navigateToAddTreatmentviaCasesheet = (
     patientId: string,
-    casesheetId: string
+    casesheetId: string,
   ) =>
     router.push(
-      `/patients/${patientId}/casesheets/${casesheetId}/treatments/add`
+      `/treatments/add?patientId=${patientId}&casesheetId=${casesheetId}`,
     );
   const navigateToEditTreatmentviaCasesheet = (
     patientId: string,
     casesheetId: string,
-    treatmentId: string
+    treatmentId: string,
   ) =>
     router.push(
-      `/patients/${patientId}/casesheets/${casesheetId}/treatments/${treatmentId}/edit`
+      `/treatments/${treatmentId}/edit?patientId=${patientId}&casesheetId=${casesheetId}`,
     );
   const navigateToViewTreatmentviaCasesheet = (
     patientId: string,
     casesheetId: string,
-    treatmentId: string
+    treatmentId: string,
   ) =>
     router.push(
-      `/patients/${patientId}/casesheets/${casesheetId}/treatments/${treatmentId}`
+      `/treatments/${treatmentId}?patientId=${patientId}&casesheetId=${casesheetId}`,
     );
+  const navigateToAddBilling = (treatmentId: string) =>
+    router.push(`/billings/add?treatmentId=${treatmentId}`);
+  const navigateToAddInvoice = (billingId: string) =>
+    router.push(`/invoices/add?billingId=${billingId}`);
+  const navigateToAddPayment = (invoiceId: string) =>
+    router.push(`/payments/add?invoiceId=${invoiceId}`);
 
   return (
     <RouterContext.Provider
@@ -82,6 +91,9 @@ export const RouterProvider: React.FC<{ children: React.ReactNode }> = ({
         navigateToAddTreatmentviaCasesheet,
         navigateToEditTreatmentviaCasesheet,
         navigateToViewTreatmentviaCasesheet,
+        navigateToAddBilling,
+        navigateToAddInvoice,
+        navigateToAddPayment,
       }}
     >
       {children}

@@ -2,19 +2,10 @@
   {
     "id": 1,
     "patientId": 1,
-    "date": "2026-01-04T03:43:02.582Z",
-    "chiefComplaint": "Tooth Pain ",
-    "onDiagnosis": "#31 Severe Cavity",
+    "date": "2026-02-25T12:50:08.225Z",
+    "chiefComplaint": "Tooth Pain",
+    "onDiagnosis": "#31 Severe Decay",
     "treatmentPlan": "Extraction",
-    "treatmentPending": "None"
-  },
-  {
-    "id": 2,
-    "patientId": 1,
-    "date": "2026-01-04T03:45:17.436Z",
-    "chiefComplaint": "Smile",
-    "onDiagnosis": "Over Bite",
-    "treatmentPlan": "Ortho",
-    "treatmentPending": "Ortho"
+    "treatmentPending": "Extraction"
   }
 ]

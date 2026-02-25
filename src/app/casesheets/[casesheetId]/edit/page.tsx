@@ -1,24 +1,24 @@
 "use client";
-import TreatmentForm, {
-  TreatmentFormRef,
-} from "@/app/Components/TreatmentForm";
+import CasesheetForm, {
+  CasesheetFormRef,
+} from "@/app/Components/CaseSheetForm";
 import Layout from "@/app/Components/Layout";
-import { useParams, useRouter } from "next/navigation";
+import { useParams, useRouter, useSearchParams } from "next/navigation";
 import { useRef } from "react";
 import { Button } from "primereact/button";
 
-export default function EditTreatmentPage() {
+const EditCaseSheet = () => {
   const params = useParams();
   const router = useRouter();
-  const formRef = useRef<TreatmentFormRef>(null);
-  const patientId = params.patientId as string;
+  const searchParams = useSearchParams();
+  const formRef = useRef<CasesheetFormRef>(null);
   const casesheetId = params.casesheetId as string;
-  const treatmentId = params.treatmentId as string;
+  const patientId = searchParams.get("patientId") || "";
 
   return (
     <Layout>
       <div className="flex justify-between items-center mb-4">
-        <h1 className="text-2xl font-bold">Edit Treatment</h1>
+        <h1 className="text-2xl font-bold">Edit Casesheet</h1>
         <div className="flex gap-2">
           <Button
             label="Update"
@@ -27,23 +27,24 @@ export default function EditTreatmentPage() {
             onClick={() => formRef.current?.submitForm()}
           />
           <Button
-            label="Cancel"
-            icon="pi pi-times"
+            label="Back"
+            icon="pi pi-arrow-left"
             severity="secondary"
             className="btn-secondary"
             onClick={() => router.back()}
           />
         </div>
       </div>
-      <TreatmentForm
+      <CasesheetForm
         ref={formRef}
         patientId={patientId}
         casesheetId={casesheetId}
-        treatmentId={treatmentId}
         mode="edit"
         onSave={() => router.back()}
         onCancel={() => router.back()}
       />
     </Layout>
   );
-}
+};
+
+export default EditCaseSheet;
