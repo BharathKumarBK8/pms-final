@@ -45,7 +45,7 @@ export interface Casesheet {
 export interface Treatment {
   id: string;
   code?: string; // e.g., "T-2026-0001"
-  casesheetId?: string; // optional - consultations can be standalone
+  casesheetId: string; // optional - consultations can be standalone
   treatmentName: string;
   description?: string;
   performedDate?: Date;

@@ -4,10 +4,22 @@ import Layout from "@/app/Components/Layout";
 import { useRouter } from "next/navigation";
 import { useRef } from "react";
 import { Button } from "primereact/button";
+import { useAppRouter } from "@/app/context/RouterContext";
+import { Patient } from "@/app/model";
 
 export default function AddPatientPage() {
   const router = useRouter();
   const formRef = useRef<PatientFormRef>(null);
+  const { navigateToCasesheetAdd } = useAppRouter();
+
+  const handleSave = async (patientData: Patient, autoNavigate: boolean) => {
+    // Navigate based on autoNavigate flag
+    if (autoNavigate) {
+      navigateToCasesheetAdd(patientData.id); // Navigate to casesheet creation
+    } else {
+      router.back(); // Just go back to the previous page
+    }
+  };
 
   return (
     <Layout>
@@ -18,7 +30,7 @@ export default function AddPatientPage() {
             label="Save"
             icon="pi pi-check"
             className="btn-secondary"
-            onClick={() => formRef.current?.submitForm()}
+            onClick={() => formRef.current?.submitForm()} // Trigger form submission
           />
           <Button
             label="Cancel"
@@ -32,7 +44,7 @@ export default function AddPatientPage() {
       <PatientForm
         ref={formRef}
         mode="add"
-        onSave={() => router.back()}
+        onSave={handleSave} // Pass the save handler to the form
         onCancel={() => router.back()}
       />
     </Layout>

@@ -14,6 +14,15 @@ export default function AddTreatmentPage() {
   const casesheetId = searchParams.get("casesheetId") || "";
   const formRef = useRef<TreatmentFormRef>(null);
 
+  const handleSave = async (savedTreatment: any, autoNavigate: boolean) => {
+    // Navigate based on autoNavigate flag
+    if (autoNavigate) {
+      router.push(`/billings/add?treatmentId=${savedTreatment.id}`); // Navigate to billing creation
+    } else {
+      router.back(); // Just go back to the previous page
+    }
+  };
+
   return (
     <Layout>
       <div className="flex justify-between items-center mb-4">
@@ -39,7 +48,7 @@ export default function AddTreatmentPage() {
         patientId={patientId}
         casesheetId={casesheetId}
         mode="add"
-        onSave={() => router.back()}
+        onSave={handleSave} // Pass the save handler to the form
         onCancel={() => router.back()}
       />
     </Layout>

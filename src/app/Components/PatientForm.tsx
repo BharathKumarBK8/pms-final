@@ -4,19 +4,20 @@ import { InputText } from "primereact/inputtext";
 import { InputTextarea } from "primereact/inputtextarea";
 import { Dropdown } from "primereact/dropdown";
 import { Button } from "primereact/button";
-import { Checkbox } from "primereact/checkbox";
+
 import { useAppRouter } from "../context/RouterContext";
 import Table from "./Table";
+import { Patient } from "../model";
 
 interface PatientFormProps {
   patientId?: string;
   mode: "view" | "edit" | "add";
-  onSave?: (savedPatient: any) => void; // returns saved patient
+  onSave?: (patientData: Patient, autoNavigate: boolean) => void; // returns saved patient
   onCancel?: () => void;
 }
 
 export interface PatientFormRef {
-  submitForm: () => Promise<any>; // returns saved patient
+  submitForm: () => Promise<Patient | undefined>; // returns saved patient
 }
 
 const PatientForm = forwardRef<PatientFormRef, PatientFormProps>(
@@ -35,9 +36,7 @@ const PatientForm = forwardRef<PatientFormRef, PatientFormProps>(
       medicalConditions: "",
       status: "Active",
     });
-
-    const [autoCreateCasesheet, setAutoCreateCasesheet] = useState(false);
-    const [savedPatientId, setSavedPatientId] = useState<string | null>(null);
+    const [autoNavigate, setAutoNavigate] = useState(false); // For auto-navigation after save
 
     const isReadOnly = mode === "view";
     const [casesheets, setCasesheets] = useState<any[]>([]);
@@ -84,19 +83,11 @@ const PatientForm = forwardRef<PatientFormRef, PatientFormProps>(
       fetchPatientAndCasesheets();
     }, [patientId]);
 
-    // Auto-navigation effect after patient saved
-    useEffect(() => {
-      if (savedPatientId && autoCreateCasesheet) {
-        navigateToCasesheetAdd(savedPatientId);
-      }
-    }, [savedPatientId, autoCreateCasesheet, navigateToCasesheetAdd]);
-
     const handleSubmit = async () => {
       try {
         const url = patientId
           ? `http://localhost:5000/api/patients/${patientId}`
           : "http://localhost:5000/api/patients";
-
         const method = patientId ? "PUT" : "POST";
 
         const response = await fetch(url, {
@@ -106,21 +97,12 @@ const PatientForm = forwardRef<PatientFormRef, PatientFormProps>(
         });
 
         if (response.ok) {
-          const savedPatient = await response.json();
-
-          // Save patient ID to state to trigger auto-navigation
-          if (!patientId && autoCreateCasesheet) {
-            setSavedPatientId(savedPatient.id);
-          }
-
-          if (onSave) onSave(savedPatient);
-          return savedPatient;
+          const patientData: Patient = await response.json();
+          if (onSave) onSave(patientData, autoNavigate); // Pass saved patient and autoNavigate flag to parent
+          return patientData;
         }
       } catch (error) {
-        console.error(
-          `Error ${patientId ? "updating" : "adding"} patient:`,
-          error,
-        );
+        console.error("Error saving patient:", error);
       }
     };
 
@@ -221,23 +203,13 @@ const PatientForm = forwardRef<PatientFormRef, PatientFormProps>(
 
             {/* Auto-create Casesheet checkbox */}
             {mode === "add" && (
-              <div
-                className="form-field"
-                style={{
-                  display: "flex",
-                  alignItems: "center",
-                  marginTop: "1rem",
-                }}
-              >
-                <Checkbox
-                  inputId="autoCreateCasesheet"
-                  checked={autoCreateCasesheet}
-                  onChange={(e) => setAutoCreateCasesheet(e.checked || false)}
-                />
-                <label
-                  htmlFor="autoCreateCasesheet"
-                  style={{ marginLeft: "0.5rem" }}
-                >
+              <div className="form-field">
+                <label className="form-label">
+                  <input
+                    type="checkbox"
+                    checked={autoNavigate}
+                    onChange={(e) => setAutoNavigate(e.target.checked)}
+                  />{" "}
                   Create Casesheet automatically after saving patient
                 </label>
               </div>

@@ -6,17 +6,18 @@ import { Button } from "primereact/button";
 import { useAppRouter } from "../context/RouterContext";
 import Table from "./Table";
 import MediaSection from "./MediaSection";
+import { Casesheet } from "../model";
 
 interface CasesheetFormProps {
   patientId: string;
   casesheetId?: string;
   mode: "view" | "edit" | "add";
-  onSave?: (savedCasesheet: any) => void;
+  onSave?: (savedCasesheet: Casesheet, autoNavigate: boolean) => void;
   onCancel?: () => void;
 }
 
 export interface CasesheetFormRef {
-  submitForm: () => Promise<any>;
+  submitForm: () => Promise<Casesheet | undefined>;
 }
 
 const CasesheetForm = forwardRef<CasesheetFormRef, CasesheetFormProps>(
@@ -35,10 +36,8 @@ const CasesheetForm = forwardRef<CasesheetFormRef, CasesheetFormProps>(
       treatmentPending: "",
     });
 
-    const [autoCreateTreatment, setAutoCreateTreatment] = useState(false);
-    const [savedCasesheetId, setSavedCasesheetId] = useState<string | null>(
-      null,
-    );
+    const [autoNavigate, setAutoNavigate] = useState(false); // State for auto-navigation checkbox
+
     const [treatments, setTreatments] = useState<any[]>([]);
     const isReadOnly = mode === "view";
 
@@ -77,17 +76,6 @@ const CasesheetForm = forwardRef<CasesheetFormRef, CasesheetFormProps>(
       fetchData();
     }, [patientId, casesheetId]);
 
-    useEffect(() => {
-      if (savedCasesheetId && autoCreateTreatment) {
-        navigateToAddTreatmentviaCasesheet(patientId, savedCasesheetId);
-      }
-    }, [
-      savedCasesheetId,
-      autoCreateTreatment,
-      navigateToAddTreatmentviaCasesheet,
-      patientId,
-    ]);
-
     const handleViewTreatment = (treatment: any) => {
       navigateToViewTreatmentviaCasesheet(
         patientId,
@@ -120,13 +108,9 @@ const CasesheetForm = forwardRef<CasesheetFormRef, CasesheetFormProps>(
         });
 
         if (response.ok) {
-          const savedData = await response.json(); // backend returns saved record with ID
-          console.log("Casesheet saved successfully:", savedData);
-          if (!casesheetId && autoCreateTreatment) {
-            setSavedCasesheetId(savedData.id); // Save casesheet ID to state to trigger auto-navigation
-          }
-          if (onSave) onSave(savedData);
-          return savedData;
+          const data: Casesheet = await response.json();
+          if (onSave) onSave(data, autoNavigate);
+          return data;
         }
       } catch (error) {
         console.error(
@@ -205,13 +189,13 @@ const CasesheetForm = forwardRef<CasesheetFormRef, CasesheetFormProps>(
             </div>
 
             {/* Auto-create Treatment checkbox */}
-            {mode !== "view" && !casesheetId && (
+            {mode === "add" && (
               <div className="form-field">
                 <label className="form-label">
                   <input
                     type="checkbox"
-                    checked={autoCreateTreatment}
-                    onChange={(e) => setAutoCreateTreatment(e.target.checked)}
+                    checked={autoNavigate}
+                    onChange={(e) => setAutoNavigate(e.target.checked)}
                   />{" "}
                   Create Treatment after saving Casesheet
                 </label>

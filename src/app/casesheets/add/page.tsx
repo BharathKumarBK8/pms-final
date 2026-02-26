@@ -13,6 +13,15 @@ export default function AddCasesheetPage() {
   const patientId = searchParams.get("patientId") || "";
   const formRef = useRef<CasesheetFormRef>(null);
 
+  const handleSave = async (savedCasesheet: any, autoNavigate: boolean) => {
+    // Navigate based on autoNavigate flag
+    if (autoNavigate) {
+      router.push(`/treatments/add?casesheetId=${savedCasesheet.id}`);
+    } else {
+      router.back();
+    }
+  };
+
   return (
     <Layout>
       <div className="flex justify-between items-center mb-4">
@@ -37,7 +46,7 @@ export default function AddCasesheetPage() {
         ref={formRef}
         patientId={patientId}
         mode="add"
-        onSave={() => router.back()}
+        onSave={handleSave}
         onCancel={() => router.back()}
       />
     </Layout>

@@ -48,12 +48,16 @@ passportConfig;
 app.use("/auth", authRoutes);
 
 // Helper function to generate codes with year
-const generateCode = (prefix, existingItems, year = new Date().getFullYear()) => {
-  const yearItems = existingItems.filter(item => 
-    item.code?.startsWith(`${prefix}-${year}`)
+const generateCode = (
+  prefix,
+  existingItems,
+  year = new Date().getFullYear(),
+) => {
+  const yearItems = existingItems.filter((item) =>
+    item.code?.startsWith(`${prefix}-${year}`),
   );
   const num = yearItems.length + 1;
-  return `${prefix}-${year}-${String(num).padStart(4, '0')}`;
+  return `${prefix}-${year}-${String(num).padStart(4, "0")}`;
 };
 
 // Patients
@@ -75,10 +79,10 @@ app.get("/api/patients/:id", (req, res) => {
 
 app.post("/api/patients", (req, res) => {
   const patients = getPatients();
-  const newPatient = { 
-    id: patients.length + 1, 
+  const newPatient = {
+    id: patients.length + 1,
     code: generateCode("PAT", patients),
-    ...req.body 
+    ...req.body,
   };
   patients.push(newPatient);
   savePatients(patients);
@@ -134,8 +138,7 @@ app.post("/api/treatments", (req, res) => {
     id: treatments.length + 1,
     code: generateCode("T", treatments),
     ...req.body,
-    patientId: parseInt(req.body.patientId),
-    casesheetId: req.body.casesheetId ? parseInt(req.body.casesheetId) : null,
+    casesheetId: parseInt(req.body.casesheetId),
     cost: parseFloat(req.body.cost),
   };
   treatments.push(newTreatment);
@@ -151,7 +154,7 @@ app.put("/api/treatments/:id", (req, res) => {
     ...treatments[index],
     ...req.body,
     patientId: parseInt(req.body.patientId),
-    casesheetId: req.body.casesheetId ? parseInt(req.body.casesheetId) : null,
+    casesheetId: parseInt(req.body.casesheetId),
     cost: parseFloat(req.body.cost),
   };
   saveTreatments(treatments);

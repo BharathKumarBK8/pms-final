@@ -4,18 +4,19 @@ import { InputText } from "primereact/inputtext";
 import { Dropdown } from "primereact/dropdown";
 import { Calendar } from "primereact/calendar";
 import Table from "./Table";
+import { Treatment } from "../model";
 
 interface TreatmentFormProps {
   patientId: string;
   casesheetId?: string;
   treatmentId?: string;
   mode: "view" | "edit" | "add";
-  onSave?: (savedTreatment: any) => void; // <-- Modified to pass saved treatment
+  onSave?: (savedTreatment: Treatment, autoNavigate: boolean) => void; // <-- Modified to pass saved treatment
   onCancel?: () => void;
 }
 
 export interface TreatmentFormRef {
-  submitForm: () => Promise<any>; // <-- Returns saved treatment for automation
+  submitForm: () => Promise<Treatment | undefined>; // <-- Returns saved treatment for automation
 }
 
 const TreatmentForm = forwardRef<TreatmentFormRef, TreatmentFormProps>(
@@ -45,6 +46,7 @@ const TreatmentForm = forwardRef<TreatmentFormRef, TreatmentFormProps>(
     ];
     const [billings, setBillings] = useState<any[]>([]);
 
+    const [autoNavigate, setAutoNavigate] = useState(false); // State for auto-navigation after save
     const billingsColumns = [
       { field: "code", header: "Billing Code", sortable: true },
       { field: "totalCost", header: "Total Cost", sortable: true },
@@ -93,40 +95,17 @@ const TreatmentForm = forwardRef<TreatmentFormRef, TreatmentFormProps>(
         });
 
         if (response.ok) {
-          const savedTreatment = await response.json();
+          const savedTreatment: Treatment = await response.json();
 
-          // --- AUTOMATIC BILLING CREATION ---
+          // Automatically set autoNavigate to true if the status is 'Completed'
           if (savedTreatment.status === "Completed") {
-            try {
-              await fetch("http://localhost:5000/api/billings", {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({
-                  patientId,
-                  treatmentId: savedTreatment.id,
-                  totalCost: savedTreatment.cost,
-                  discountAmount: 0,
-                  finalAmount: savedTreatment.cost,
-                  status: "Pending",
-                }),
-              });
-
-              // Optionally, refetch billing table
-              const billingsRes = await fetch(
-                `http://localhost:5000/api/billings?treatmentId=${savedTreatment.id}`,
-              );
-              const billingsData = await billingsRes.json();
-              setBillings(billingsData);
-            } catch (billingError) {
-              console.error("Error creating billing:", billingError);
-            }
+            if (onSave) onSave(savedTreatment, true); // Pass true to autoNavigate
+            return savedTreatment;
+          } else {
+            // Just save without navigating
+            if (onSave) onSave(savedTreatment, false); // Pass false to prevent navigation
+            return savedTreatment;
           }
-
-          // --- Callback for parent automation ---
-          if (onSave) onSave(savedTreatment);
-
-          // Return savedTreatment for parent automation
-          return savedTreatment;
         }
       } catch (error) {
         console.error(
