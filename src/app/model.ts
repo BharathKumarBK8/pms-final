@@ -3,6 +3,7 @@
 // --------------------
 export interface User {
   id: string;
+  code?: string; // e.g., "USR-2026-0001"
   role: "owner" | "admin" | "doctor" | "staff";
   email: string;
   displayName?: string;
@@ -14,6 +15,7 @@ export interface User {
 // --------------------
 export interface Patient {
   id: string;
+  code?: string; // e.g., "PAT-2026-0001"
   name: string;
   dateOfBirth: Date;
   gender: "Male" | "Female" | "Other";
@@ -27,6 +29,7 @@ export interface Patient {
 // --------------------
 export interface Casesheet {
   id: string;
+  code?: string; // e.g., "CS-2026-0001"
   patientId: string; // link to Patient
   doctorId: string; // link to User
   date: Date;
@@ -41,6 +44,7 @@ export interface Casesheet {
 // --------------------
 export interface Treatment {
   id: string;
+  code?: string; // e.g., "T-2026-0001"
   casesheetId?: string; // optional - consultations can be standalone
   treatmentName: string;
   description?: string;
@@ -55,6 +59,7 @@ export interface Treatment {
 // --------------------
 export interface Billing {
   id: string;
+  code?: string; // e.g., "BIL-2026-0001"
   treatmentId: string; // 1:1 per treatment
   invoiceId?: string; // optional until grouped into invoice
   totalCost: number;
@@ -67,6 +72,7 @@ export interface Billing {
 // --------------------
 export interface Invoice {
   id: string;
+  code?: string; // e.g., "INV-2026-0001"
   patientId: string;
   casesheetId?: string; // optional - for organization
   totalAmount: number; // sum of linked billings
@@ -81,6 +87,7 @@ export interface Invoice {
 // --------------------
 export interface Payment {
   id: string;
+  code?: string; // e.g., "PAY-2026-0001"
   invoiceId: string; // link to Invoice
   amount: number;
   paymentMethod: "Cash" | "Card" | "UPI" | "Bank Transfer";

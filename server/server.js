@@ -47,6 +47,15 @@ passportConfig;
 
 app.use("/auth", authRoutes);
 
+// Helper function to generate codes with year
+const generateCode = (prefix, existingItems, year = new Date().getFullYear()) => {
+  const yearItems = existingItems.filter(item => 
+    item.code?.startsWith(`${prefix}-${year}`)
+  );
+  const num = yearItems.length + 1;
+  return `${prefix}-${year}-${String(num).padStart(4, '0')}`;
+};
+
 // Patients
 const patientsPath = path.join(__dirname, "data", "patients.json");
 const getPatients = () => JSON.parse(fs.readFileSync(patientsPath, "utf-8"));
@@ -66,7 +75,11 @@ app.get("/api/patients/:id", (req, res) => {
 
 app.post("/api/patients", (req, res) => {
   const patients = getPatients();
-  const newPatient = { id: patients.length + 1, ...req.body };
+  const newPatient = { 
+    id: patients.length + 1, 
+    code: generateCode("PAT", patients),
+    ...req.body 
+  };
   patients.push(newPatient);
   savePatients(patients);
   res.status(201).json(newPatient);
@@ -119,6 +132,7 @@ app.post("/api/treatments", (req, res) => {
   const treatments = getTreatments();
   const newTreatment = {
     id: treatments.length + 1,
+    code: generateCode("T", treatments),
     ...req.body,
     patientId: parseInt(req.body.patientId),
     casesheetId: req.body.casesheetId ? parseInt(req.body.casesheetId) : null,
@@ -180,6 +194,7 @@ app.post("/api/casesheets", (req, res) => {
   const casesheets = getCasesheets();
   const newCasesheet = {
     id: casesheets.length + 1,
+    code: generateCode("CS", casesheets),
     patientId: parseInt(req.body.patientId),
     ...req.body,
   };
@@ -305,6 +320,7 @@ app.post("/api/billings", (req, res) => {
   const billings = getBillings();
   const newBilling = {
     id: billings.length > 0 ? Math.max(...billings.map((b) => b.id)) + 1 : 1,
+    code: generateCode("BIL", billings),
     treatmentId: parseInt(req.body.treatmentId),
     invoiceId: req.body.invoiceId ? parseInt(req.body.invoiceId) : undefined,
     totalCost: parseFloat(req.body.totalCost),
@@ -385,6 +401,7 @@ app.post("/api/invoices", (req, res) => {
   const invoices = getInvoices();
   const newInvoice = {
     id: invoices.length > 0 ? Math.max(...invoices.map((i) => i.id)) + 1 : 1,
+    code: generateCode("INV", invoices),
     patientId: parseInt(req.body.patientId),
     totalAmount: parseFloat(req.body.totalAmount),
     discountAmount: parseFloat(req.body.discountAmount || 0),
@@ -462,6 +479,7 @@ app.post("/api/payments", (req, res) => {
   const payments = getPayments();
   const newPayment = {
     id: payments.length > 0 ? Math.max(...payments.map((p) => p.id)) + 1 : 1,
+    code: generateCode("PAY", payments),
     invoiceId: parseInt(req.body.invoiceId),
     amount: parseFloat(req.body.amount),
     paymentMethod: req.body.paymentMethod || "Cash",

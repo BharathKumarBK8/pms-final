@@ -4,18 +4,19 @@ import { InputText } from "primereact/inputtext";
 import { InputTextarea } from "primereact/inputtextarea";
 import { Dropdown } from "primereact/dropdown";
 import { Button } from "primereact/button";
+import { Checkbox } from "primereact/checkbox";
 import { useAppRouter } from "../context/RouterContext";
 import Table from "./Table";
 
 interface PatientFormProps {
   patientId?: string;
   mode: "view" | "edit" | "add";
-  onSave?: () => void;
+  onSave?: (savedPatient: any) => void; // returns saved patient
   onCancel?: () => void;
 }
 
 export interface PatientFormRef {
-  submitForm: () => void;
+  submitForm: () => Promise<any>; // returns saved patient
 }
 
 const PatientForm = forwardRef<PatientFormRef, PatientFormProps>(
@@ -34,6 +35,9 @@ const PatientForm = forwardRef<PatientFormRef, PatientFormProps>(
       medicalConditions: "",
       status: "Active",
     });
+
+    const [autoCreateCasesheet, setAutoCreateCasesheet] = useState(false);
+    const [savedPatientId, setSavedPatientId] = useState<string | null>(null);
 
     const isReadOnly = mode === "view";
     const [casesheets, setCasesheets] = useState<any[]>([]);
@@ -55,6 +59,7 @@ const PatientForm = forwardRef<PatientFormRef, PatientFormProps>(
       { field: "onDiagnosis", header: "On Diagnosis", sortable: true },
     ];
 
+    // Fetch patient + casesheets if editing/viewing
     useEffect(() => {
       if (!patientId) return;
 
@@ -79,6 +84,13 @@ const PatientForm = forwardRef<PatientFormRef, PatientFormProps>(
       fetchPatientAndCasesheets();
     }, [patientId]);
 
+    // Auto-navigation effect after patient saved
+    useEffect(() => {
+      if (savedPatientId && autoCreateCasesheet) {
+        navigateToCasesheetAdd(savedPatientId);
+      }
+    }, [savedPatientId, autoCreateCasesheet, navigateToCasesheetAdd]);
+
     const handleSubmit = async () => {
       try {
         const url = patientId
@@ -93,8 +105,16 @@ const PatientForm = forwardRef<PatientFormRef, PatientFormProps>(
           body: JSON.stringify(formData),
         });
 
-        if (response.ok && onSave) {
-          onSave();
+        if (response.ok) {
+          const savedPatient = await response.json();
+
+          // Save patient ID to state to trigger auto-navigation
+          if (!patientId && autoCreateCasesheet) {
+            setSavedPatientId(savedPatient.id);
+          }
+
+          if (onSave) onSave(savedPatient);
+          return savedPatient;
         }
       } catch (error) {
         console.error(
@@ -198,6 +218,30 @@ const PatientForm = forwardRef<PatientFormRef, PatientFormProps>(
                 disabled={isReadOnly}
               />
             </div>
+
+            {/* Auto-create Casesheet checkbox */}
+            {mode === "add" && (
+              <div
+                className="form-field"
+                style={{
+                  display: "flex",
+                  alignItems: "center",
+                  marginTop: "1rem",
+                }}
+              >
+                <Checkbox
+                  inputId="autoCreateCasesheet"
+                  checked={autoCreateCasesheet}
+                  onChange={(e) => setAutoCreateCasesheet(e.checked || false)}
+                />
+                <label
+                  htmlFor="autoCreateCasesheet"
+                  style={{ marginLeft: "0.5rem" }}
+                >
+                  Create Casesheet automatically after saving patient
+                </label>
+              </div>
+            )}
           </div>
         </div>
 

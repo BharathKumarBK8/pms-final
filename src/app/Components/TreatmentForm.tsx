@@ -3,8 +3,6 @@ import { useState, useEffect, forwardRef, useImperativeHandle } from "react";
 import { InputText } from "primereact/inputtext";
 import { Dropdown } from "primereact/dropdown";
 import { Calendar } from "primereact/calendar";
-import { Button } from "primereact/button";
-import { useAppRouter } from "../context/RouterContext";
 import Table from "./Table";
 
 interface TreatmentFormProps {
@@ -12,17 +10,16 @@ interface TreatmentFormProps {
   casesheetId?: string;
   treatmentId?: string;
   mode: "view" | "edit" | "add";
-  onSave?: () => void;
+  onSave?: (savedTreatment: any) => void; // <-- Modified to pass saved treatment
   onCancel?: () => void;
 }
 
 export interface TreatmentFormRef {
-  submitForm: () => void;
+  submitForm: () => Promise<any>; // <-- Returns saved treatment for automation
 }
 
 const TreatmentForm = forwardRef<TreatmentFormRef, TreatmentFormProps>(
   ({ patientId, casesheetId, treatmentId, mode, onSave, onCancel }, ref) => {
-    const { navigateToAddBilling } = useAppRouter();
     const [formData, setFormData] = useState({
       patientId: patientId,
       casesheetId: casesheetId,
@@ -49,10 +46,11 @@ const TreatmentForm = forwardRef<TreatmentFormRef, TreatmentFormProps>(
     const [billings, setBillings] = useState<any[]>([]);
 
     const billingsColumns = [
-      { field: "id", header: "Billing ID", sortable: true },
+      { field: "code", header: "Billing Code", sortable: true },
       { field: "totalCost", header: "Total Cost", sortable: true },
       { field: "discountAmount", header: "Discount Amount", sortable: true },
       { field: "finalAmount", header: "Final Amount", sortable: true },
+      { field: "status", header: "Payment Status", sortable: true }, // <-- shows partial/full payment
     ];
     const isReadOnly = mode === "view";
 
@@ -79,6 +77,7 @@ const TreatmentForm = forwardRef<TreatmentFormRef, TreatmentFormProps>(
       fetchData();
     }, [treatmentId, casesheetId]);
 
+    // --- MODIFIED handleSubmit for automation ---
     const handleSubmit = async () => {
       try {
         const url = treatmentId
@@ -93,8 +92,41 @@ const TreatmentForm = forwardRef<TreatmentFormRef, TreatmentFormProps>(
           body: JSON.stringify(formData),
         });
 
-        if (response.ok && onSave) {
-          onSave();
+        if (response.ok) {
+          const savedTreatment = await response.json();
+
+          // --- AUTOMATIC BILLING CREATION ---
+          if (savedTreatment.status === "Completed") {
+            try {
+              await fetch("http://localhost:5000/api/billings", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({
+                  patientId,
+                  treatmentId: savedTreatment.id,
+                  totalCost: savedTreatment.cost,
+                  discountAmount: 0,
+                  finalAmount: savedTreatment.cost,
+                  status: "Pending",
+                }),
+              });
+
+              // Optionally, refetch billing table
+              const billingsRes = await fetch(
+                `http://localhost:5000/api/billings?treatmentId=${savedTreatment.id}`,
+              );
+              const billingsData = await billingsRes.json();
+              setBillings(billingsData);
+            } catch (billingError) {
+              console.error("Error creating billing:", billingError);
+            }
+          }
+
+          // --- Callback for parent automation ---
+          if (onSave) onSave(savedTreatment);
+
+          // Return savedTreatment for parent automation
+          return savedTreatment;
         }
       } catch (error) {
         console.error(
@@ -105,7 +137,7 @@ const TreatmentForm = forwardRef<TreatmentFormRef, TreatmentFormProps>(
     };
 
     useImperativeHandle(ref, () => ({
-      submitForm: handleSubmit,
+      submitForm: handleSubmit, // <-- now returns savedTreatment
     }));
 
     return (
@@ -113,14 +145,28 @@ const TreatmentForm = forwardRef<TreatmentFormRef, TreatmentFormProps>(
         <div className="form-card">
           <h2
             className="section-title"
-            style={{ marginBottom: "2rem", borderBottom: "none" }}
+            style={{
+              marginBottom: "2rem",
+              borderBottom: "none",
+              display: "flex",
+              justifyContent: "space-between",
+              alignItems: "center",
+            }}
           >
-            {mode === "add"
-              ? "New Treatment"
-              : mode === "edit"
-                ? "Edit Treatment"
-                : "Treatment Details"}
+            <span>
+              {mode === "add"
+                ? "New Treatment"
+                : mode === "edit"
+                  ? "Edit Treatment"
+                  : "Treatment Details"}
+            </span>
           </h2>
+          {mode !== "view" && (
+            <p className="text-sm text-gray-600 mb-4">
+              When this treatment is marked Completed, it is added to the
+              patient's visit invoice for the day.
+            </p>
+          )}
           <div className="form-grid">
             <div className="form-field">
               <label className="form-label">Date</label>
@@ -197,17 +243,9 @@ const TreatmentForm = forwardRef<TreatmentFormRef, TreatmentFormProps>(
           <div className="form-card">
             <div className="section-header">
               <h3 className="section-title">Billings</h3>
-              {mode !== "view" && (
-                <Button
-                  label="Add Billing"
-                  className="btn-primary"
-                  icon="pi pi-plus"
-                  onClick={() => navigateToAddBilling(treatmentId)}
-                />
-              )}
             </div>
             <Table
-              title={`Billings for Treatment ${treatmentId}`}
+              title={`Billings for Treatment`}
               data={billings}
               columns={billingsColumns}
               mode={mode}

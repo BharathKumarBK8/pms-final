@@ -11,12 +11,12 @@ interface CasesheetFormProps {
   patientId: string;
   casesheetId?: string;
   mode: "view" | "edit" | "add";
-  onSave?: () => void;
+  onSave?: (savedCasesheet: any) => void;
   onCancel?: () => void;
 }
 
 export interface CasesheetFormRef {
-  submitForm: () => void;
+  submitForm: () => Promise<any>;
 }
 
 const CasesheetForm = forwardRef<CasesheetFormRef, CasesheetFormProps>(
@@ -34,8 +34,12 @@ const CasesheetForm = forwardRef<CasesheetFormRef, CasesheetFormProps>(
       treatmentPlan: "",
       treatmentPending: "",
     });
-    const [treatments, setTreatments] = useState<any[]>([]);
 
+    const [autoCreateTreatment, setAutoCreateTreatment] = useState(false);
+    const [savedCasesheetId, setSavedCasesheetId] = useState<string | null>(
+      null,
+    );
+    const [treatments, setTreatments] = useState<any[]>([]);
     const isReadOnly = mode === "view";
 
     const treatmentColumns = [
@@ -47,6 +51,7 @@ const CasesheetForm = forwardRef<CasesheetFormRef, CasesheetFormProps>(
       { field: "status", header: "Status", sortable: true },
     ];
 
+    // Fetch existing casesheet and treatments if editing/viewing
     useEffect(() => {
       if (!casesheetId) return;
 
@@ -55,7 +60,7 @@ const CasesheetForm = forwardRef<CasesheetFormRef, CasesheetFormProps>(
           const [casesheetRes, treatmentsRes] = await Promise.all([
             fetch(`http://localhost:5000/api/casesheets/${casesheetId}`),
             fetch(
-              `http://localhost:5000/api/treatments?patientId=${patientId}&casesheetId=${casesheetId}`
+              `http://localhost:5000/api/treatments?patientId=${patientId}&casesheetId=${casesheetId}`,
             ),
           ]);
 
@@ -72,11 +77,22 @@ const CasesheetForm = forwardRef<CasesheetFormRef, CasesheetFormProps>(
       fetchData();
     }, [patientId, casesheetId]);
 
+    useEffect(() => {
+      if (savedCasesheetId && autoCreateTreatment) {
+        navigateToAddTreatmentviaCasesheet(patientId, savedCasesheetId);
+      }
+    }, [
+      savedCasesheetId,
+      autoCreateTreatment,
+      navigateToAddTreatmentviaCasesheet,
+      patientId,
+    ]);
+
     const handleViewTreatment = (treatment: any) => {
       navigateToViewTreatmentviaCasesheet(
         patientId,
         casesheetId!,
-        treatment.id
+        treatment.id,
       );
     };
 
@@ -84,10 +100,11 @@ const CasesheetForm = forwardRef<CasesheetFormRef, CasesheetFormProps>(
       navigateToEditTreatmentviaCasesheet(
         patientId,
         casesheetId!,
-        treatment.id
+        treatment.id,
       );
     };
 
+    // Submit form and optionally navigate to Treatment
     const handleSubmit = async () => {
       try {
         const url = casesheetId
@@ -102,13 +119,19 @@ const CasesheetForm = forwardRef<CasesheetFormRef, CasesheetFormProps>(
           body: JSON.stringify({ ...formData, patientId: parseInt(patientId) }),
         });
 
-        if (response.ok && onSave) {
-          onSave();
+        if (response.ok) {
+          const savedData = await response.json(); // backend returns saved record with ID
+          console.log("Casesheet saved successfully:", savedData);
+          if (!casesheetId && autoCreateTreatment) {
+            setSavedCasesheetId(savedData.id); // Save casesheet ID to state to trigger auto-navigation
+          }
+          if (onSave) onSave(savedData);
+          return savedData;
         }
       } catch (error) {
         console.error(
           `Error ${casesheetId ? "updating" : "adding"} casesheet:`,
-          error
+          error,
         );
       }
     };
@@ -180,9 +203,24 @@ const CasesheetForm = forwardRef<CasesheetFormRef, CasesheetFormProps>(
                 disabled={isReadOnly}
               />
             </div>
+
+            {/* Auto-create Treatment checkbox */}
+            {mode !== "view" && !casesheetId && (
+              <div className="form-field">
+                <label className="form-label">
+                  <input
+                    type="checkbox"
+                    checked={autoCreateTreatment}
+                    onChange={(e) => setAutoCreateTreatment(e.target.checked)}
+                  />{" "}
+                  Create Treatment after saving Casesheet
+                </label>
+              </div>
+            )}
           </div>
         </div>
 
+        {/* Casesheet Media */}
         {casesheetId && mode !== "add" && (
           <div className="form-card">
             <h2 className="section-title">Casesheet Media</h2>
@@ -194,6 +232,7 @@ const CasesheetForm = forwardRef<CasesheetFormRef, CasesheetFormProps>(
           </div>
         )}
 
+        {/* Treatment History */}
         {casesheetId && (
           <div className="form-card">
             <div className="section-header">
@@ -222,7 +261,7 @@ const CasesheetForm = forwardRef<CasesheetFormRef, CasesheetFormProps>(
         )}
       </div>
     );
-  }
+  },
 );
 
 CasesheetForm.displayName = "CasesheetForm";
