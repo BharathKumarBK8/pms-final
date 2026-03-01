@@ -6,13 +6,14 @@ import { Button } from "primereact/button";
 import { useAppRouter } from "../context/RouterContext";
 import { useAuth } from "../context/AuthContext";
 import ProtectedRoute from "../Components/ProtectedRoute";
+import { Patient } from "../model";
 
 export default function PatientsPage() {
   const { navigateToPatientEdit, navigateToPatientView, navigateToPatientAdd } =
     useAppRouter();
 
   const { user } = useAuth();
-  const [patients, setPatients] = useState<any[]>([]);
+  const [patients, setPatients] = useState<Patient[]>([]);
   const [loading, setLoading] = useState(false);
 
   const columns = [
@@ -23,15 +24,34 @@ export default function PatientsPage() {
     { field: "status", header: "Status", sortable: true },
   ];
 
-  const handleEdit = (rowData: any) => {
+  const calculateAge = (dateOfBirth: string) => {
+    const today = new Date();
+    const birthDate = new Date(dateOfBirth);
+
+    let age = today.getFullYear() - birthDate.getFullYear();
+    const monthDifference = today.getMonth() - birthDate.getMonth();
+
+    if (
+      monthDifference < 0 ||
+      (monthDifference === 0 && today.getDate() < birthDate.getDate())
+    ) {
+      age--;
+    }
+
+    return age;
+  };
+
+  const handleEdit = (rowData: Patient) => {
+    if (!rowData.id) return;
     navigateToPatientEdit(rowData.id);
   };
 
-  const handleView = (rowData: any) => {
+  const handleView = (rowData: Patient) => {
+    if (!rowData.id) return;
     navigateToPatientView(rowData.id);
   };
 
-  const handleDelete = (rowData: any) => {
+  const handleDelete = (rowData: Patient) => {
     console.log("Delete patient with ID:", rowData.id);
   };
 
@@ -43,7 +63,13 @@ export default function PatientsPage() {
       try {
         const res = await fetch("http://localhost:5000/api/patients");
         const json = await res.json();
-        setPatients(json);
+
+        const updatedPatients = json.map((patient: Patient) => ({
+          ...patient,
+          age: calculateAge(patient.dateOfBirth),
+        }));
+
+        setPatients(updatedPatients);
       } catch (error) {
         console.error("Failed to fetch patients", error);
       } finally {

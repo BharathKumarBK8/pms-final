@@ -14,24 +14,39 @@ export interface User {
 // 2. Patient
 // --------------------
 export interface Patient {
-  id: string;
+  id?: string;
   code?: string; // e.g., "PAT-2026-0001"
   name: string;
-  dateOfBirth: Date;
+  dateOfBirth: string;
   gender: "Male" | "Female" | "Other";
   phoneNumber?: string;
   status: "Active" | "Inactive";
   previousConditions?: string[];
+  autoCreateVisit: boolean; // flag to auto-create visit after patient creation
 }
 
 // --------------------
-// 3. Casesheet
+// 3. Visit
+// --------------------+++
+// Represents a patient coming to the clinic
+export interface Visit {
+  id?: string;
+  patientId: string;
+  status: "Open" | "Closed";
+  arrivedAt: Date;
+  finishedAt?: Date;
+}
+
 // --------------------
+// 4. Casesheet
+// --------------------
+// Medical record, may or may not be tied to a visit
 export interface Casesheet {
-  id: string;
+  id?: string;
   code?: string; // e.g., "CS-2026-0001"
-  patientId: string; // link to Patient
-  doctorId: string; // link to User
+  patientId: string;
+  doctorId: string;
+  visitId: string; // optional link to Visit
   date: Date;
   chiefComplaint: string;
   diagnosis: string;
@@ -40,42 +55,45 @@ export interface Casesheet {
 }
 
 // --------------------
-// 4. Treatment
+// 5. Treatment
 // --------------------
+// Each procedure or service performed
 export interface Treatment {
-  id: string;
+  id?: string;
   code?: string; // e.g., "T-2026-0001"
-  casesheetId: string; // optional - consultations can be standalone
+  visitId: string;
+  casesheetId?: string; // optional
   treatmentName: string;
   description?: string;
   performedDate?: Date;
-  status: "Planned" | "Completed" | "Cancelled";
   performedById?: string; // link to User
+  status: "Planned" | "Completed" | "Cancelled";
   cost: number;
 }
 
 // --------------------
-// 5. Billing
+// 6. Billing
 // --------------------
+// One per Visit, aggregates all treatments of that visit
 export interface Billing {
-  id: string;
+  id?: string;
   code?: string; // e.g., "BIL-2026-0001"
-  treatmentId: string; // 1:1 per treatment
-  invoiceId?: string; // optional until grouped into invoice
+  visitId: string; // link to Visit
   totalCost: number;
-  discountAmount?: number | 0;
+  discountAmount?: number;
   finalAmount: number;
 }
 
 // --------------------
-// 6. Invoice
+// 7. Invoice
 // --------------------
+// Financial document, can be partially paid
 export interface Invoice {
-  id: string;
+  id?: string;
   code?: string; // e.g., "INV-2026-0001"
+  billingId: string; // link to Billing
   patientId: string;
-  casesheetId?: string; // optional - for organization
-  totalAmount: number; // sum of linked billings
+  totalAmount: number; // sum of treatments via billing
   discountAmount?: number;
   finalAmount: number;
   status: "Unpaid" | "Partially Paid" | "Paid";
@@ -83,10 +101,11 @@ export interface Invoice {
 }
 
 // --------------------
-// 7. Payment
+// 8. Payment
 // --------------------
+// Payment linked to invoice
 export interface Payment {
-  id: string;
+  id?: string;
   code?: string; // e.g., "PAY-2026-0001"
   invoiceId: string; // link to Invoice
   amount: number;
